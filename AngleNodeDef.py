@@ -1,0 +1,56 @@
+'''
+11. left_shoulder
+12. right_shoulder
+13. left_elbow
+14. right_elbow
+15. left_wrist
+16. right_wrist
+17. left_pinky
+18. right_pinky
+19. left_index (中指?)
+20. right_index
+21. left_thunb
+22. right_thunb
+23. left_hip (骨盆?)
+24. right_hip
+25. left_knee
+26. right_knee
+27. left_ankle
+28. right_ankle
+29. left_heel (腳跟)
+30. right_heel
+31. left_foot_index
+32. right_foot_index (腳中指)
+'''
+# point1 pointCenter point2
+
+LEFT_SHOULDER_ANGLE_POINT = [13, 11, 23]
+LEFT_ELBOW_ANGLE_POINT = [11, 13, 15]
+LEFT_WRIST_ANGLE_POINT = [13, 15, 19] # 19 中指
+
+LEFT_HIP_ANGLE_POINT = [11, 23, 25]
+LEFT_KNEE_ANGLE_POINT = [23, 25, 27]
+LEFT_ANKLE_ANGLE_POINT = [25, 27, 31]
+
+RIGHT_SHOULDER_ANGLE_POINT = [14, 12, 24]
+RIGHT_ELBOW_ANGLE_POINT = [12, 14, 16]
+RIGHT_WRIST_ANGLE_POINT = [14, 16, 20] # 20 中指
+
+RIGHT_HIP_ANGLE_POINT = [12, 24, 26]
+RIGHT_KNEE_ANGLE_POINT = [24, 26, 28]
+RIGHT_ANKLE_ANGLE_POINT = [26, 28, 32]
+
+ALL_ANGLE_POINTS = {
+    "LEFT_SHOULDER": LEFT_SHOULDER_ANGLE_POINT,
+    "LEFT_ELBOW": LEFT_ELBOW_ANGLE_POINT,
+    "LEFT_WRIST": LEFT_WRIST_ANGLE_POINT,
+    "LEFT_HIP": LEFT_HIP_ANGLE_POINT,
+    "LEFT_KNEE": LEFT_KNEE_ANGLE_POINT,
+    "LEFT_ANKLE": LEFT_ANKLE_ANGLE_POINT,
+    "RIGHT_SHOULDER": RIGHT_SHOULDER_ANGLE_POINT,
+    "RIGHT_ELBOW": RIGHT_ELBOW_ANGLE_POINT,
+    "RIGHT_WRIST": RIGHT_WRIST_ANGLE_POINT,
+    "RIGHT_HIP": RIGHT_HIP_ANGLE_POINT,
+    "RIGHT_KNEE": RIGHT_KNEE_ANGLE_POINT,
+    "RIGHT_ANKLE": RIGHT_ANKLE_ANGLE_POINT,
+}
