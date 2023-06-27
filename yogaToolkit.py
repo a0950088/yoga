@@ -5,6 +5,8 @@ import math as m
 import AngleNodeDef
 from statistics import median
 import json
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 mp_drawing = mp.solutions.drawing_utils # mediapipe 繪圖方法
@@ -30,10 +32,11 @@ def computeAngle(point1, centerPoint, point2):
     B = m.degrees(m.acos(cos_b))
     return B
 
-def getPointList(w, h, point1, point2, point3):
-    p1 = [point1.x*w, point1.y*h, point1.z]
-    p2 = [point2.x*w, point2.y*h, point2.z]
-    p3 = [point3.x*w, point3.y*h, point3.z]
+def getOriginalPointList(w, h, point1, point2, point3):
+    temp = [w, h, 1]
+    p1 = [int(point1[i]*temp[i]) for i in range(len(point1))]
+    p2 = [int(point2[i]*temp[i]) for i in range(len(point2))]
+    p3 = [int(point3[i]*temp[i]) for i in range(len(point3))]
     return p1,p2,p3
 
 def readSampleJsonFile(path):
@@ -46,10 +49,9 @@ def sampleVideo(videoPath, storagePath):
     cap = cv2.VideoCapture(videoPath)
 
     with mp_holistic.Holistic(
-        static_image_mode=True,
+        static_image_mode=False,
         model_complexity=2,
-        enable_segmentation=True,
-        refine_face_landmarks=True) as holistic:
+        enable_segmentation=True) as holistic:
         if not cap.isOpened():
             print("Video not open")
             exit()
@@ -68,18 +70,14 @@ def sampleVideo(videoPath, storagePath):
             nodeList = mp.solutions.holistic.PoseLandmark
             
             perFrameOfAngle = []
-            for anglePoint in AngleNodeDef.ALL_ANGLE_POINTS:
-                point1, pointCenter, point2 = getPointList(original_width,
-                                                            original_height,
-                                                            poseLandmarks[nodeList(AngleNodeDef.ALL_ANGLE_POINTS[anglePoint][0])], 
-                                                            poseLandmarks[nodeList(AngleNodeDef.ALL_ANGLE_POINTS[anglePoint][1])], 
-                                                            poseLandmarks[nodeList(AngleNodeDef.ALL_ANGLE_POINTS[anglePoint][2])])
+            for key,value in AngleNodeDef.ALL_ANGLE_POINTS.items():
+                point1 = [poseLandmarks[nodeList(value[0])].x, poseLandmarks[nodeList(value[0])].y, poseLandmarks[nodeList(value[0])].z]
+                pointCenter = [poseLandmarks[nodeList(value[1])].x, poseLandmarks[nodeList(value[1])].y, poseLandmarks[nodeList(value[1])].z]
+                point2 = [poseLandmarks[nodeList(value[2])].x, poseLandmarks[nodeList(value[2])].y, poseLandmarks[nodeList(value[2])].z]
+                
                 angle = computeAngle(point1, pointCenter, point2)
                 perFrameOfAngle.append(angle)
                 print("Angle: ", round(angle,2))
-                point1 = [int(i) for i in point1]
-                pointCenter = [int(i) for i in pointCenter]
-                point2 = [int(i) for i in point2]
             allCorrectAngle.append(perFrameOfAngle)
         allCorrectAngle = np.array(allCorrectAngle)
         allCorrectAngle = allCorrectAngle.T
@@ -93,20 +91,18 @@ def sampleVideo(videoPath, storagePath):
             temp = []
             index+=1
         print(output_dict)
-        with open(f"{storagePath}/sample2.json", 'w') as file:
+        with open(storagePath, 'w') as file:
             json.dump(output_dict, file)
     cap.release()
-    # output.release()
     cv2.destroyAllWindows()
     
 def detectVideo(detectPath, storagePath, sampleAngle):
     cap = cv2.VideoCapture(detectPath)
 
     with mp_holistic.Holistic(
-        static_image_mode=True,
+        static_image_mode=False,
         model_complexity=2,
-        enable_segmentation=True,
-        refine_face_landmarks=True) as holistic:
+        enable_segmentation=True) as holistic:
         if not cap.isOpened():
             print("Video not open")
             exit()
@@ -118,6 +114,7 @@ def detectVideo(detectPath, storagePath, sampleAngle):
         # output = cv2.VideoWriter('Warrior2_style3_test_demo.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (original_width, original_height))
         while True:
             ret, frame = cap.read()
+            correct_angle_count = 0
             if not ret:
                 print("Video end")
                 break
@@ -127,31 +124,35 @@ def detectVideo(detectPath, storagePath, sampleAngle):
             nodeList = mp.solutions.holistic.PoseLandmark
             
             for key,value in AngleNodeDef.ALL_ANGLE_POINTS.items():
-                point1, pointCenter, point2 = getPointList(original_width,
-                                                            original_height,
-                                                            poseLandmarks[nodeList(value[0])], 
-                                                            poseLandmarks[nodeList(value[1])], 
-                                                            poseLandmarks[nodeList(value[2])])
+                point1 = [poseLandmarks[nodeList(value[0])].x, poseLandmarks[nodeList(value[0])].y, poseLandmarks[nodeList(value[0])].z]
+                pointCenter = [poseLandmarks[nodeList(value[1])].x, poseLandmarks[nodeList(value[1])].y, poseLandmarks[nodeList(value[1])].z]
+                point2 = [poseLandmarks[nodeList(value[2])].x, poseLandmarks[nodeList(value[2])].y, poseLandmarks[nodeList(value[2])].z]
+
                 angle = computeAngle(point1, pointCenter, point2)
                 min_sample_angle = sampleAngle[key][0]
                 max_sample_angle = sampleAngle[key][1]
-                    
-                # print("Angle: ", round(angle,2))
-                point1 = [int(i) for i in point1]
-                pointCenter = [int(i) for i in pointCenter]
-                point2 = [int(i) for i in point2]
-                # text = f"{round(angle,2)} deg"
+                
+                point1, pointCenter, point2 = getOriginalPointList(original_width, original_height, point1, pointCenter, point2)
+
                 text = f"{int(angle)} deg"
                 if(angle>=min_sample_angle and angle<=max_sample_angle):
                     cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    correct_angle_count+=1
                 else:
                     cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                # cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 cv2.line(frame, point1[:2], pointCenter[:2], (0, 255, 255), 1)
                 cv2.line(frame, point2[:2], pointCenter[:2], (0, 255, 255), 1)
                 cv2.circle(frame, point1[:2], 3, (255, 0, 0), -1)
                 cv2.circle(frame, pointCenter[:2], 3, (255, 0, 0), -1)
                 cv2.circle(frame, point2[:2], 3, (255, 0, 0), -1)
+            # print("correct_angle_count: ",correct_angle_count)
+            if correct_angle_count == len(AngleNodeDef.ALL_ANGLE_POINTS):
+                result_str = "Correct!"
+                cv2.putText(frame, result_str, (original_width-500,100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 4)
+            else:
+                result_str = "Incorrect!"
+                cv2.putText(frame, result_str, (original_width-500,100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
+                
             cv2.imshow("Video", frame)
             output.write(frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -164,8 +165,7 @@ def detectImage(imagePath, storagePath, sampleAngle):
     with mp_holistic.Holistic(
         static_image_mode=True,
         model_complexity=2,
-        enable_segmentation=True,
-        refine_face_landmarks=True) as holistic:
+        enable_segmentation=True) as holistic:
         for idx, file in enumerate(imagePath):
             #cv2 image width是y軸 height是x軸
             image = cv2.imread(file)
@@ -177,20 +177,16 @@ def detectImage(imagePath, storagePath, sampleAngle):
             nodeList = mp.solutions.holistic.PoseLandmark
             
             for key,value in AngleNodeDef.ALL_ANGLE_POINTS.items():
-                point1, pointCenter, point2 = getPointList(image_width,
-                                                            image_height,
-                                                            poseLandmarks[nodeList(value[0])], 
-                                                            poseLandmarks[nodeList(value[1])], 
-                                                            poseLandmarks[nodeList(value[2])])
+                point1 = [poseLandmarks[nodeList(value[0])].x, poseLandmarks[nodeList(value[0])].y, poseLandmarks[nodeList(value[0])].z]
+                pointCenter = [poseLandmarks[nodeList(value[1])].x, poseLandmarks[nodeList(value[1])].y, poseLandmarks[nodeList(value[1])].z]
+                point2 = [poseLandmarks[nodeList(value[2])].x, poseLandmarks[nodeList(value[2])].y, poseLandmarks[nodeList(value[2])].z]
+
                 angle = computeAngle(point1, pointCenter, point2)
                 min_sample_angle = sampleAngle[key][0]
                 max_sample_angle = sampleAngle[key][1]
                     
-                # print("Angle: ", round(angle,2))
-                point1 = [int(i) for i in point1]
-                pointCenter = [int(i) for i in pointCenter]
-                point2 = [int(i) for i in point2]
-                # text = f"{round(angle,2)} deg"
+                point1, pointCenter, point2 = getOriginalPointList(image_width, image_height, point1, pointCenter, point2)
+                
                 text = f"{int(angle)} deg"
                 if(angle>=min_sample_angle and angle<=max_sample_angle):
                     cv2.putText(image, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -203,7 +199,80 @@ def detectImage(imagePath, storagePath, sampleAngle):
                 cv2.circle(image, pointCenter[:2], 3, (255, 0, 0), -1)
                 cv2.circle(image, point2[:2], 3, (255, 0, 0), -1)
             print("--------------")
-            f"{storagePath}/{str(idx)}.jpg"
+            # f"{storagePath}/{str(idx)}.jpg"
             cv2.imwrite(f"{storagePath}/{str(idx)}.jpg", image)
             cv2.imshow("image", image)
             cv2.waitKey(0)
+
+def detectWebCam(storagePath):
+    cap = cv2.VideoCapture(0)
+    width = 640
+    height = 480
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+
+    with mp_holistic.Holistic(
+        static_image_mode=False,
+        model_complexity=2,
+        enable_segmentation=True) as holistic:
+        if not cap.isOpened():
+            print("Cam not open")
+            exit()
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        # original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        # original_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # print(original_width, original_height)
+        output = cv2.VideoWriter(storagePath, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+        # output = cv2.VideoWriter('Warrior2_style3_test_demo.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (original_width, original_height))
+        while True:
+            ret, frame = cap.read()
+            # correct_angle_count = 0
+            if not ret:
+                print("Cam end")
+                break
+            try:
+                results = holistic.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                poseLandmarks = results.pose_landmarks.landmark
+                nodeList = mp.solutions.holistic.PoseLandmark
+                
+                for key,value in AngleNodeDef.ALL_ANGLE_POINTS.items():
+                    point1 = [poseLandmarks[nodeList(value[0])].x, poseLandmarks[nodeList(value[0])].y, poseLandmarks[nodeList(value[0])].z]
+                    pointCenter = [poseLandmarks[nodeList(value[1])].x, poseLandmarks[nodeList(value[1])].y, poseLandmarks[nodeList(value[1])].z]
+                    point2 = [poseLandmarks[nodeList(value[2])].x, poseLandmarks[nodeList(value[2])].y, poseLandmarks[nodeList(value[2])].z]
+
+                    angle = computeAngle(point1, pointCenter, point2)
+                    # min_sample_angle = sampleAngle[key][0]
+                    # max_sample_angle = sampleAngle[key][1]
+                    
+                    point1, pointCenter, point2 = getOriginalPointList(width, height, point1, pointCenter, point2)
+
+                    text = f"{int(angle)} deg"
+                    # if(angle>=min_sample_angle and angle<=max_sample_angle):
+                    #     cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    #     correct_angle_count+=1
+                    # else:
+                    #     cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    cv2.putText(frame, text, pointCenter[:2], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    cv2.line(frame, point1[:2], pointCenter[:2], (0, 255, 255), 1)
+                    cv2.line(frame, point2[:2], pointCenter[:2], (0, 255, 255), 1)
+                    cv2.circle(frame, point1[:2], 3, (255, 0, 0), -1)
+                    cv2.circle(frame, pointCenter[:2], 3, (255, 0, 0), -1)
+                    cv2.circle(frame, point2[:2], 3, (255, 0, 0), -1)
+            except:
+                print("no pose in frame")
+                
+            # print("correct_angle_count: ",correct_angle_count)
+            # if correct_angle_count == len(AngleNodeDef.ALL_ANGLE_POINTS):
+            #     result_str = "Correct!"
+            #     cv2.putText(frame, result_str, (original_width-500,100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 4)
+            # else:
+            #     result_str = "Incorrect!"
+            #     cv2.putText(frame, result_str, (original_width-500,100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
+                
+            cv2.imshow("Cam", frame)
+            output.write(frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    cap.release()
+    output.release()
+    cv2.destroyAllWindows()

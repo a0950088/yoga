@@ -2,21 +2,42 @@ import yogaToolkit as yoga
 import os
 
 CWD = os.getcwd()
+'''
+1. TreePose
+2. WarriorTwoPose
+...
+'''
+YOGA_TYPE = "TreePose" 
+
+SAMPLE_VIDEO_NAME = "sample1.mp4"
+STORAGE_JSON_NAME = "sample1.json"
+SAMPLE_VIDEO_PATH = f"{CWD}/{YOGA_TYPE}/Video/sample"
+STORAGE_JSON_PATH = f"{CWD}/{YOGA_TYPE}/SampleJson"
+
+DETECT_VIDEO_PATH = f"{CWD}/{YOGA_TYPE}/Video/detect"
+STORAGE_VIDEO_PATH = f"{CWD}/{YOGA_TYPE}/Video/output"
+DETECT_IMAGE_PATH = f"{CWD}/{YOGA_TYPE}/Image/detect"
+STORAGE_IMAGE_PATH = f"{CWD}/{YOGA_TYPE}/Image/output"
+
 # sample angle
-sampleVideoPath = f"{CWD}/TreePose/Video/sample/sample1.mp4"
-sampleStoragePath = f"{CWD}/TreePose/SampleJson"
-yoga.sampleVideo(sampleVideoPath, sampleStoragePath)
+# sampleVideoPath = f"{SAMPLE_VIDEO_PATH}/{SAMPLE_VIDEO_NAME}"
+# sampleStoragePath = f"{STORAGE_JSON_PATH}/{STORAGE_JSON_NAME}"
+# yoga.sampleVideo(sampleVideoPath, sampleStoragePath)
 
 # read json
-sampleJsonFilePath = f"{CWD}/TreePose/SampleJson/sample2.json"
-sampleAngle = yoga.readSampleJsonFile(sampleJsonFilePath)
+# jsonFile = "sample1.json"
+# sampleJsonFilePath = f"{STORAGE_JSON_PATH}/{jsonFile}"
+# sampleAngle = yoga.readSampleJsonFile(sampleJsonFilePath)
 
 # detect video
-detectVideoPath = f"{CWD}/TreePose/Video/detect/test4.mp4"
-storageOutputVideoPath = f"{CWD}/TreePose/Video/output/test4.mp4"
-yoga.detectVideo(detectVideoPath, storageOutputVideoPath, sampleAngle)
+# videoFile = "test4.mp4"
+# detectVideoPath = f"{DETECT_VIDEO_PATH}/{videoFile}"
+# storageOutputVideoPath = f"{STORAGE_VIDEO_PATH}/{videoFile}"
+# yoga.detectVideo(detectVideoPath, storageOutputVideoPath, sampleAngle)
 
 # detect image
-detectImagePath = [f"{CWD}/test.jpg",f"{CWD}/test2.jpg",f"{CWD}/test3.jpg"]
-storageOutputImagePath = f"{CWD}"
-yoga.detectImage(detectImagePath, storageOutputImagePath, sampleAngle)
+# imageFiles = [f"{DETECT_IMAGE_PATH}/test.jpg", f"{DETECT_IMAGE_PATH}/test4.jpg"]
+# storageOutputImagePath = f"{STORAGE_IMAGE_PATH}"
+# yoga.detectImage(imageFiles, STORAGE_IMAGE_PATH, sampleAngle)
+
+yoga.detectWebCam(f"{CWD}/testWebCam/test.mp4")
