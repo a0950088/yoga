@@ -69,7 +69,7 @@ class WarriorIIPosture():
                 print("Sample Video end")
                 break
             _, point3d = toolkit.getMediapipeResult(frame)
-            if point3d == None:
+            if type(point3d) == int:
                 print("sample video detect pose error")
                 exit()
             perFrameOfAngle = []
@@ -92,7 +92,7 @@ class WarriorIIPosture():
         '''
         self.tips = ""
         point2d, point3d = toolkit.getMediapipeResult(frame, mode)
-        if point2d == None and point3d == None:
+        if type(point2d) == int and type(point3d) == int:
             self.tips = "無法偵測到完整骨架"
             return frame
         for key,value in AngleNodeDef.WARRIOR_II_ANGLE.items():

@@ -23,7 +23,7 @@ def getMediapipeResult(frame, mode=True):
         point3d = results.pose_world_landmarks.landmark
         return point2d, point3d
     except:
-        return None, None
+        return 0, 0
 
 def getLandmarks(landmark, w=None, h=None):
     '''
