@@ -122,7 +122,7 @@ class WarriorIIPosture():
                 else:
                     self.roi[key] = False
                     if tip_flag == True:
-                        self.tips = "請確認右腳膝蓋與腳踝的關節點須重疊，並注意大腿下壓的角度"
+                        self.tips = "請確認右腳膝蓋與腳踝的關節點須重疊，\n並注意大腿下壓的角度"
             elif key == 'LEFT_KNEE':
                 tolerance_val = 10
                 min_angle = self.sample_angle_dict[key]-tolerance_val
@@ -159,7 +159,7 @@ class WarriorIIPosture():
                 else:
                     self.roi[key] = False
                     if tip_flag == True:
-                        self.tips = "請確認兩側肩膀不要過度用力，並將背部挺直，盡量將身體面向正面"
+                        self.tips = "請確認兩側肩膀不要過度用力，並將背部挺直，\n盡量將身體面向正面"
             elif key == 'LEFT_ELBOW' or key == 'RIGHT_ELBOW':
                 tolerance_val = 5
                 min_angle = self.sample_angle_dict[key]-tolerance_val
