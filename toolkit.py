@@ -14,13 +14,16 @@ mp_result_pose = mp_pose.Pose(static_image_mode=False,
                                         min_detection_confidence=0.5)
 
 def getMediapipeResult(frame, mode=True):
-    if mode:
-        results = mp_sample_pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    else:
-        results = mp_result_pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    point2d = results.pose_landmarks.landmark
-    point3d = results.pose_world_landmarks.landmark
-    return point2d, point3d
+    try:
+        if mode:
+            results = mp_sample_pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        else:
+            results = mp_result_pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        point2d = results.pose_landmarks.landmark
+        point3d = results.pose_world_landmarks.landmark
+        return point2d, point3d
+    except:
+        return None, None
 
 def getLandmarks(landmark, w=None, h=None):
     '''
