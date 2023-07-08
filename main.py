@@ -1,36 +1,33 @@
 import os
 import cv2
-from yogaPose import WarriorIIPosture
+from yogaPose import YogaPose
 CWD = os.getcwd().replace("\\","/")
 
-IMAGE_FILES = ['./WarriorTwoPose/Image/detect/test1.jpg',
-               './WarriorTwoPose/Image/detect/f1.jpg']
-# sample video path
-sample_path = f"{CWD}/WarriorTwoPose/Video/sample/Warrior2_Pose3_Trim.mp4"
-file_name = (sample_path.split('/')[-1]).split('.')[0]
-storage_path = f"{CWD}/WarriorTwoPose/SampleJson/sample_{file_name}.json"
+IMAGE_FILES = [f"{CWD}/TreePose/Image/detect/test.jpg",
+               f"{CWD}/TreePose/Image/detect/test4.jpg",
+               f"{CWD}/TreePose/Image/detect/test5.jpg"]
 
-# detect video path
-video_path = f"{CWD}/WarriorTwoPose/Video/detect/test3.mp4"
-
-warriorII = WarriorIIPosture()
-warriorII.sample(sample_path, storage_path)
-
-if not warriorII.initialDetect():
-    print("Please check sample file exist, or run sample function.")
-    exit()
+pose = YogaPose("Tree")
+pose.initialDetect()
 
 # detect image
 for idx, file in enumerate(IMAGE_FILES):
     image = cv2.imread(file)
     image_height, image_width, _ = image.shape
-    frame = warriorII.detect(image, image_width, image_height, True)
+    frame = pose.detect(image, image_width, image_height, True)
     cv2.imshow('image',frame)
     cv2.waitKey(0)
-    
+
+# detect video path
+video_path = f"{CWD}/TreePose/Video/detect/test2.mp4"
+file_name = (video_path.split('/')[-1]).split('.')[0]
+storage_path = f"{CWD}/TreePose/Video/output/{file_name}.mp4"
+
 cap = cv2.VideoCapture(video_path)
 original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 original_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fps = cap.get(cv2.CAP_PROP_FPS)
+output = cv2.VideoWriter(storage_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (original_width, original_height))
 print(original_width,original_height)
 fps = cap.get(cv2.CAP_PROP_FPS)
 while True:
@@ -38,10 +35,12 @@ while True:
     if not ret:
         print("Video end")
         break
-    frame = warriorII.detect(frame, original_width, original_height, False)
-    print(warriorII.tips)
+    frame = pose.detect(frame, original_width, original_height, False)
+    print(pose.tips)
     cv2.imshow('image',frame)
+    output.write(frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()
+output.release()
 cv2.destroyAllWindows()
