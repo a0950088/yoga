@@ -6,8 +6,10 @@ def correction(image):
 	image_width, image_height = image.shape[1], image.shape[0]
 
 	''' calculate the correction bounding box'''
-	center_x , center_y = int(image_width / 2), int(image_height * 0.85)
-	rectangle = np.array([[center_x - 380, center_y - 75], [center_x -498, center_y + 75], [center_x + 498, center_y + 75], [center_x + 380, center_y - 75]], np.int32)
+	center_x , center_y = int(image_width / 2), int(image_height * 0.8)
+
+	# rectangle = np.array([[center_x - 380, center_y - 75], [center_x -498, center_y + 75], [center_x + 498, center_y + 75], [center_x + 380, center_y - 75]], np.int32)
+	rectangle = np.array([[center_x - 0.33 * image_width, center_y - 0.07 * image_height], [center_x - 0.433 * image_width, center_y + 0.07 * image_height], [center_x + 0.433 * image_width, center_y + 0.07 * image_height], [center_x + 0.33 * image_width, center_y - 0.07 * image_height]], np.int32)
 
 	''' detect yoga mat(temporarily useless) '''
 	# image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
