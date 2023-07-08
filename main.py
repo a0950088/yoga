@@ -7,6 +7,9 @@ IMAGE_FILES = [f"{CWD}/TreePose/Image/detect/test.jpg",
                f"{CWD}/TreePose/Image/detect/test4.jpg",
                f"{CWD}/TreePose/Image/detect/test5.jpg"]
 
+'''
+type: WarriorII, Tree
+'''
 pose = YogaPose("Tree")
 pose.initialDetect()
 
