@@ -56,6 +56,23 @@ class YogaPose():
             angle_def = AngleNodeDef.WARRIOR_II_ANGLE
             jsonfile_path = f"{CWD}/JsonFile/WarriorIIPose/sample.json"
             samplefile_path = f"{CWD}/SampleVideo/WarriorIIPose/sample.mp4"
+        elif type == "Plank":
+            roi = {
+                'NOSE': False,
+                'RIGHT_ANKLE': False,
+                'RIGHT_KNEE': False,
+                'LEFT_ANKLE': False,
+                'LEFT_KNEE': False,
+                'LEFT_HIP': False,
+                'RIGHT_HIP': False,
+                'LEFT_SHOULDER': False,
+                'RIGHT_SHOULDER': False,
+                'LEFT_ELBOW': False,
+                'RIGHT_ELBOW': False
+            }
+            angle_def = AngleNodeDef.PLANK_ANGLE
+            jsonfile_path = f"{CWD}/JsonFile/PlankPose/sample.json"
+            samplefile_path = f"{CWD}/SampleVideo/PlankPose/sample.mp4"
         return roi, angle_def, jsonfile_path, samplefile_path
     
     def initialAngleDict(self, dict={}):
@@ -100,7 +117,7 @@ class YogaPose():
                                      list(toolkit.getLandmarks(point3d[value[2]])))
                 perFrameOfAngle.append(angle)
             sum_angle+=perFrameOfAngle
-        # print(sum_angle/frame_count) # 平均角度
+        print(sum_angle/frame_count) # 平均角度
         sum_angle/=frame_count
         toolkit.writeSampleJsonFile(sum_angle, self.angle_def, storage_path)
         print("Sample Done.")
@@ -125,6 +142,9 @@ class YogaPose():
             self.roi, self.tips = toolkit.treePoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'WarriorII'):
             self.roi, self.tips = toolkit.WarriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+        elif(self.type == 'Plank'):
+            self.roi, self.tips = toolkit.PlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+
         return self.draw(w, h, frame, point2d)
     
     def draw(self, w, h, frame, point2d):

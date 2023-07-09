@@ -26,7 +26,7 @@ def correction(image):
 
 
 if __name__ == '__main__':
-	image = cv2.imread('./Dataset/pose (1).jpg')
+	image = cv2.imread('./Dataset/Plank/3.jpg')
 	cv2.imshow('l', correction(image))
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
