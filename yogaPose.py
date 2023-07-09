@@ -56,6 +56,19 @@ class YogaPose():
             angle_def = AngleNodeDef.WARRIOR_II_ANGLE
             jsonfile_path = f"{CWD}/JsonFile/WarriorIIPose/sample.json"
             samplefile_path = f"{CWD}/SampleVideo/WarriorIIPose/sample.mp4"
+        elif type == 'ReversePlank':
+            roi = {
+                'NOSE': False,
+                'LEFT_ELBOW': False,
+                'LEFT_WRIST': False,
+                'LEFT_INDEX': False,
+                'LEFT_SHOULDER': False,
+                'LEFT_HIP': False,
+                'LEFT_KNEE': False
+            }
+            angle_def = AngleNodeDef.REVERSE_PLANK_ANGLE
+            jsonfile_path = f"{CWD}/JsonFile/ReversePlankPose/sample.json"
+            samplefile_path = f"{CWD}/SampleVideo/ReversePlankPose/sample.mp4"
         return roi, angle_def, jsonfile_path, samplefile_path
     
     def initialAngleDict(self, dict={}):
@@ -121,10 +134,14 @@ class YogaPose():
                                     list(toolkit.getLandmarks(point3d[value[1]])), 
                                     list(toolkit.getLandmarks(point3d[value[2]])))
             self.angle_dict[key] = angle
+        print(self.sample_angle_dict)
+        print(self.angle_dict)
         if(self.type == 'Tree'):
             self.roi, self.tips = toolkit.treePoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'WarriorII'):
             self.roi, self.tips = toolkit.WarriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+        elif(self.type == 'ReversePlank'):
+            self.roi, self.tips = toolkit.ReversePlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         return self.draw(w, h, frame, point2d)
     
     def draw(self, w, h, frame, point2d):

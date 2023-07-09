@@ -215,3 +215,81 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     if tips == "":
         tips = "動作正確 ! "
     return roi, tips
+
+def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+    for key, value in roi.items():
+        tip_flag = False
+        if tips == "":
+            tip_flag = True
+        if key == 'NOSE':
+            node_x,_,_ = getLandmarks(point3d[AngleNodeDef.NOSE])
+            left_hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_HIP])
+            right_hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_HIP])
+            if node_x>left_hip_x and node_x>right_hip_x:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認頭部需朝向左邊"
+        elif key == 'LEFT_ELBOW':
+            tolerance_val = 10
+            min_angle = sample_angle_dict[key]-tolerance_val
+            # max_angle = sample_angle_dict[key]+tolerance_val
+            if angle_dict[key]>=min_angle:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認雙手手軸是否與肩膀成一條線"
+        elif key == 'LEFT_WRIST':
+            tolerance_val = 10
+            min_angle = sample_angle_dict[key]-tolerance_val
+            max_angle = sample_angle_dict[key]+tolerance_val
+            if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認雙手手腕是否與手軸成一條線"
+        elif key == 'LEFT_INDEX':
+            index_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_INDEX])
+            wrist_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_WRIST])
+            if index_x < wrist_x:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認手指需朝向臂部方向"
+        elif key == 'LEFT_SHOULDER':
+            tolerance_val = 10
+            min_angle = sample_angle_dict[key]-tolerance_val
+            max_angle = sample_angle_dict[key]+tolerance_val
+            if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認手臂需與地面盡量垂直"
+        elif key == 'LEFT_HIP':
+            tolerance_val = 5
+            min_angle = sample_angle_dict[key]-tolerance_val
+            max_angle = sample_angle_dict[key]+tolerance_val
+            if angle_dict[key]>=min_angle:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認臂部是否有抬起，並與脊椎呈一條線"
+        elif key == 'LEFT_KNEE':
+            tolerance_val = 5
+            min_angle = sample_angle_dict[key]-tolerance_val
+            max_angle = sample_angle_dict[key]+tolerance_val
+            if angle_dict[key]>=min_angle:
+                roi[key] = True
+            else:
+                roi[key] = False
+                if tip_flag == True:
+                    tips = "請確認雙腳需與上半身呈一條線"
+    if tips == "":
+        tips = "動作正確 ! "
+    return roi, tips
