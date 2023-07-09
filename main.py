@@ -10,7 +10,7 @@ IMAGE_FILES = [f"{CWD}/TreePose/Image/detect/test.jpg",
 '''
 type: WarriorII, Tree, Plank
 '''
-pose = YogaPose("ReversePlank")
+pose = YogaPose("Plank")
 pose.initialDetect()
 
 # detect image
@@ -22,9 +22,9 @@ pose.initialDetect()
 #     cv2.waitKey(0)
 
 # # detect video path
-video_path = f"{CWD}/ReversePlankPose/Video/detect/test4.mp4"
+video_path = f"{CWD}/PlankPose/Video/detect/test3.mp4"
 file_name = (video_path.split('/')[-1]).split('.')[0]
-storage_path = f"{CWD}/ReversePlankPose/Video/output/{file_name}.mp4"
+storage_path = f"{CWD}/PlankPose/Video/output/{file_name}.mp4"
 
 cap = cv2.VideoCapture(video_path)
 original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

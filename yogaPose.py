@@ -9,7 +9,7 @@ CWD = os.getcwd().replace("\\","/")
 
 class YogaPose():
     '''
-    type: WarriorII, Tree, ...etc
+    type: WarriorII, Tree, ReversePlank, Plank ...etc
     '''
     def __init__(self, type):
         self.type = type
@@ -151,8 +151,8 @@ class YogaPose():
                                     list(toolkit.getLandmarks(point3d[value[1]])), 
                                     list(toolkit.getLandmarks(point3d[value[2]])))
             self.angle_dict[key] = angle
-        print(self.sample_angle_dict)
-        print(self.angle_dict)
+        # print(self.sample_angle_dict)
+        # print(self.angle_dict)
         if(self.type == 'Tree'):
             self.roi, self.tips = toolkit.treePoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'WarriorII'):

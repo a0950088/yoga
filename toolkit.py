@@ -217,13 +217,13 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
 
 def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    if point3d[AngleNodeDef.NOSE].x < point3d[23].x and point3d[AngleNodeDef.NOSE].x < point3d[24].x:
+    if point3d[AngleNodeDef.NOSE].x < point3d[AngleNodeDef.LEFT_HIP].x and point3d[AngleNodeDef.NOSE].x < point3d[AngleNodeDef.RIGHT_HIP].x:
         side = 'LEFT_'
-        if abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[2].y) < abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[AngleNodeDef.LEFT_ELBOW].y) * 0.05:
+        if abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[AngleNodeDef.LEFT_EYE].y) < abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[AngleNodeDef.LEFT_ELBOW].y) * 0.05:
             tips = "請保持頸椎平行於地面"
-    elif point3d[AngleNodeDef.NOSE].x > point3d[23].x and point3d[AngleNodeDef.NOSE].x > point3d[24].x:
+    elif point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.LEFT_HIP].x and point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.RIGHT_HIP].x:
         side = 'RIGHT_'
-        if abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[5].y) < abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_ELBOW].y) * 0.05:
+        if abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_EYE].y) < abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_ELBOW].y) * 0.05:
             tips = "請保持頸椎平行於地面"
     else:
         tips = '無法辨識哪邊朝向鏡頭'
