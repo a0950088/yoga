@@ -8,7 +8,7 @@ IMAGE_FILES = [f"{CWD}/TreePose/Image/detect/test.jpg",
                f"{CWD}/TreePose/Image/detect/test5.jpg"]
 
 '''
-type: WarriorII, Tree
+type: WarriorII, Tree, Plank
 '''
 pose = YogaPose("ReversePlank")
 pose.initialDetect()
@@ -42,8 +42,9 @@ while True:
     print(pose.tips)
     cv2.imshow('image',frame)
     output.write(frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(10) & 0xFF == ord('q'):
         break
+    
 cap.release()
 output.release()
 cv2.destroyAllWindows()
