@@ -24,24 +24,23 @@ class VideoPlayer:
 		# self.pause_event.clear()
 
 	def update(self):
-		while True:
-			while self.is_playing:
-				# if not self.pause_event.is_set():
-				ret, frame = self.video.read()
-				if not ret:
-					break
-				try:
-					frame = cv2.resize(frame, (self.canvas.winfo_width(), self.canvas.winfo_height()))
-					frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-					photo_image = ImageTk.PhotoImage(Image.fromarray(frame))
-					self.canvas.create_image(0, 0, anchor='nw', image=photo_image)
-					self.canvas.image = photo_image
-					self.canvas.update()
-				except:
-					print('stop video stream')
-				# else:
-				# 	self.pause_event.wait()
-				# 	print('wait')
+		while self.is_playing:
+			# if not self.pause_event.is_set():
+			ret, frame = self.video.read()
+			if not ret:
+				self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+			try:
+				frame = cv2.resize(frame, (self.canvas.winfo_width(), self.canvas.winfo_height()))
+				frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+				photo_image = ImageTk.PhotoImage(Image.fromarray(frame))
+				self.canvas.create_image(0, 0, anchor='nw', image=photo_image)
+				self.canvas.image = photo_image
+				self.canvas.update()
+			except:
+				print('stop video stream')
+			# else:
+			# 	self.pause_event.wait()
+			# 	print('wait')
 	
 	def stop(self):
 		self.is_playing = False
