@@ -1,11 +1,7 @@
-import mediapipe as mp
-import toolkit
+import yoga_toolkit.toolkit as toolkit
 import cv2
-import os
-import AngleNodeDef
+import yoga_toolkit.AngleNodeDef as AngleNodeDef
 import numpy as np
-
-CWD = os.getcwd().replace("\\","/")
 
 class YogaPose():
     '''
@@ -38,8 +34,8 @@ class YogaPose():
                 'RIGHT_INDEX': False,
             }
             angle_def = AngleNodeDef.TREE_ANGLE
-            jsonfile_path = f"{CWD}/JsonFile/TreePose/sample.json"
-            samplefile_path = f"{CWD}/SampleVideo/TreePose/sample.mp4"
+            jsonfile_path = f"yoga_toolkit/JsonFile/TreePose/sample.json"
+            samplefile_path = f"yoga_toolkit/SampleVideo/TreePose/sample.mp4"
         elif type == 'WarriorII':
             roi = {
                 'RIGHT_ANKLE': False,
@@ -54,8 +50,8 @@ class YogaPose():
                 'RIGHT_ELBOW': False
             }
             angle_def = AngleNodeDef.WARRIOR_II_ANGLE
-            jsonfile_path = f"{CWD}/JsonFile/WarriorIIPose/sample.json"
-            samplefile_path = f"{CWD}/SampleVideo/WarriorIIPose/sample.mp4"
+            jsonfile_path = f"yoga_toolkit/JsonFile/WarriorIIPose/sample.json"
+            samplefile_path = f"yoga_toolkit/SampleVideo/WarriorIIPose/sample.mp4"
         elif type == 'ReversePlank':
             roi = {
                 'NOSE': False,
@@ -67,8 +63,8 @@ class YogaPose():
                 'LEFT_KNEE': False
             }
             angle_def = AngleNodeDef.REVERSE_PLANK_ANGLE
-            jsonfile_path = f"{CWD}/JsonFile/ReversePlankPose/sample.json"
-            samplefile_path = f"{CWD}/SampleVideo/ReversePlankPose/sample.mp4"
+            jsonfile_path = f"yoga_toolkit/JsonFile/ReversePlankPose/sample.json"
+            samplefile_path = f"yoga_toolkit/SampleVideo/ReversePlankPose/sample.mp4"
         elif type == "Plank":
             roi = {
                 'NOSE': False,
@@ -84,8 +80,8 @@ class YogaPose():
                 'RIGHT_ELBOW': False
             }
             angle_def = AngleNodeDef.PLANK_ANGLE
-            jsonfile_path = f"{CWD}/JsonFile/PlankPose/sample.json"
-            samplefile_path = f"{CWD}/SampleVideo/PlankPose/sample.mp4"
+            jsonfile_path = f"yoga_toolkit/JsonFile/PlankPose/sample.json"
+            samplefile_path = f"yoga_toolkit/SampleVideo/PlankPose/sample.mp4"
         return roi, angle_def, jsonfile_path, samplefile_path
     
     def initialAngleDict(self, dict={}):

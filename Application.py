@@ -4,8 +4,8 @@ import os
 from CameraStream import *
 from VideoPlayer import *
 import VideoPath
-from yoga_detection.correction_toolkit import *
-from yoga_detection.yogaPose import *
+from yoga_toolkit.correction_toolkit import *
+from yoga_toolkit.yogaPose import *
 import pyttsx3
 import time
 

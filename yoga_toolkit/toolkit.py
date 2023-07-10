@@ -2,7 +2,7 @@ import mediapipe as mp
 import cv2
 import json
 import math as m
-import AngleNodeDef
+import yoga_toolkit.AngleNodeDef as AngleNodeDef
 
 mp_pose = mp.solutions.pose
 pose_connection = mp_pose.POSE_CONNECTIONS

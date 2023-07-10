@@ -1,16 +1,16 @@
 import os
 import cv2
-from yogaPose import YogaPose
+from yoga_toolkit.yogaPose import YogaPose
 CWD = os.getcwd().replace("\\","/")
 
-IMAGE_FILES = [f"{CWD}/TreePose/Image/detect/test.jpg",
-               f"{CWD}/TreePose/Image/detect/test4.jpg",
-               f"{CWD}/TreePose/Image/detect/test5.jpg"]
+IMAGE_FILES = [f"{CWD}/yoga_toolkit/TreePose/Image/detect/test.jpg",
+               f"{CWD}/yoga_toolkit/TreePose/Image/detect/test4.jpg",
+               f"{CWD}/yoga_toolkit/TreePose/Image/detect/test5.jpg"]
 
 '''
-type: WarriorII, Tree, Plank
+type: WarriorII, Tree, Plank, ReversePlank
 '''
-pose = YogaPose("Plank")
+pose = YogaPose("ReversePlank")
 pose.initialDetect()
 
 # detect image
@@ -22,9 +22,9 @@ pose.initialDetect()
 #     cv2.waitKey(0)
 
 # # detect video path
-video_path = f"{CWD}/PlankPose/Video/detect/test3.mp4"
+video_path = f"{CWD}/yoga_toolkit/ReversePlankPose/Video/detect/test3.mp4"
 file_name = (video_path.split('/')[-1]).split('.')[0]
-storage_path = f"{CWD}/PlankPose/Video/output/{file_name}.mp4"
+storage_path = f"{CWD}/yoga_toolkit/ReversePlankPose/Video/output/{file_name}.mp4"
 
 cap = cv2.VideoCapture(video_path)
 original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
