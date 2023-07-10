@@ -33,7 +33,6 @@ class VideoPlayer:
 				print('stop video stream')
 
 			time.sleep(1 / self.fps)
-
 	
 	def stop(self):
 		self.is_playing = False
