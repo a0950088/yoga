@@ -118,8 +118,8 @@ class StartPlay(tk.Frame):
 		self.hint_text.set('開始偵測...')
 		tk.Label(self, textvariable=self.hint_text, font=('微軟正黑體', 16), fg='#B15BFF').place(x=700, y=620)
 		tk.Button(self, text='Return', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.stop).place(x=1100, y=10)
-		tk.Button(self, text='Play', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_resume).place(x=200, y=620, relwidth=0.06, relheight=0.06)
-		tk.Button(self, text='Stop', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_stop).place(x=300, y=620, relwidth=0.06, relheight=0.06)
+		# tk.Button(self, text='Play', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_resume).place(x=200, y=620, relwidth=0.06, relheight=0.06)
+		# tk.Button(self, text='Stop', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_stop).place(x=300, y=620, relwidth=0.06, relheight=0.06)
 		
 		self.width, self.height = 600, 500
 		""" video """
@@ -148,13 +148,8 @@ class StartPlay(tk.Frame):
 		self.voice_thread.daemon = True
 
 		self.cap_start()
+		self.player.start()
 
-	def video_stop(self):
-		self.player.pause()
-
-	def video_resume(self):
-		self.player.play()
-	
 	def cap_start(self):
 		self.is_running = True
 		self.thread.start()
@@ -181,7 +176,13 @@ class StartPlay(tk.Frame):
 			result = self.hint_text.get()
 			self.engine.say(result)
 			self.engine.runAndWait()
-			time.sleep(10)
+			time.sleep(2)
+
+	# def video_stop(self):
+	# 	self.player.pause()
+
+	# def video_resume(self):
+	# 	self.player.play()
 
 	def stop(self):
 		self.is_running = False
