@@ -98,11 +98,11 @@ class Menu(tk.Frame):
 			command=lambda: master.switch_frame(StartPlay, 'Plank', self.vs)).place(x=320, y=200, relwidth=0.17, relheight=0.08)
 		tk.Button(self, text='Reverse Plank', bg='#DDDDFF', font=('Comic Sans MS', 13), 
 			command=lambda: master.switch_frame(StartPlay, 'Reverse Plank', self.vs)).place(x=720, y=200, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Warrior1 Style', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=300, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Warrior3 Style', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=300, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='cow face pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=400, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Downward-Facing Dog', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=400, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Bow pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=500, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Child\'s pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=300, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Seated Forward Bend', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=300, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Low Lunge', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=400, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Downward dog', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=400, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Pyramid pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=500, relwidth=0.17, relheight=0.08)
 		tk.Button(self, text='Bridge pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=500, relwidth=0.17, relheight=0.08)
 
 		tk.Button(self, text='Return', bg='#DDDDFF', font=('Comic Sans MS', 13), command=lambda: master.switch_frame(startPage, vs=self.vs)).place(x=1100, y=15)
@@ -173,10 +173,14 @@ class StartPlay(tk.Frame):
 
 	def voice(self):
 		while self.is_running:
-			result = self.hint_text.get()
-			self.engine.say(result)
-			self.engine.runAndWait()
-			time.sleep(2)
+			try:
+				result = self.hint_text.get()
+				self.engine.say(result)
+				self.engine.runAndWait()
+				time.sleep(2)
+			except:
+				# print('speech stop')
+				pass
 
 	# def video_stop(self):
 	# 	self.player.pause()
