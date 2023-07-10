@@ -44,8 +44,8 @@ class VideoPlayer:
 				# 	print('wait')
 	
 	def stop(self):
-	self.is_playing = False
-	self.video.release()
+		self.is_playing = False
+		self.video.release()
 
 	# def pause(self):
 	# 	if self.is_playing:
