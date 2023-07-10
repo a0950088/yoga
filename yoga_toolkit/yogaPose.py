@@ -141,6 +141,8 @@ class YogaPose():
         point2d, point3d = toolkit.getMediapipeResult(frame, mode)
         if type(point2d) == int and type(point3d) == int:
             self.tips = "無法偵測到完整骨架"
+            # 水平翻轉影片
+            frame = cv2.flip(frame, 180)
             return frame
         for key,value in self.angle_def.items():
             angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
@@ -163,10 +165,11 @@ class YogaPose():
     def draw(self, w, h, frame, point2d):
         # draw body connection
         for m in toolkit.pose_connection:
-            cv2.line(frame, toolkit.getLandmarks(point2d[m[0]], w, h), list(toolkit.getLandmarks(point2d[m[1]], w, h)), (0, 255, 255), 1)
+            cv2.line(frame, toolkit.getLandmarks(point2d[m[0]], w, h), list(toolkit.getLandmarks(point2d[m[1]], w, h)), (0, 0, 255), 1)
         # draw points
         point_color = (0,0,0)
         for node in toolkit.nodeList:
+            point = toolkit.getLandmarks(point2d[node.value], w, h)
             if node.name in self.roi:
                 if self.roi[node.name]:
                     point_color = (0,255,0)
@@ -174,5 +177,17 @@ class YogaPose():
                     point_color = (0,0,255)
             else:
                 point_color = (255,255,255)
-            cv2.circle(frame, toolkit.getLandmarks(point2d[node.value], w, h), 3, point_color, -1)
+            # draw result angle
+            if node.name in self.angle_def:
+                cv2.putText(frame, str(round(self.angle_dict[node.name], 3)), point, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (6, 211, 255), 2)
+            
+            cv2.circle(frame, point, 3, point_color, -1)
+        # draw sample angle
+        draw_y = 30
+        for key, value in self.sample_angle_dict.items():
+            text = f"{key}: {value}"
+            cv2.putText(frame, text, (10, draw_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (6, 211, 255), 1)
+            draw_y+=20
+        # 水平翻轉影片
+        frame = cv2.flip(frame, 180)
         return frame
