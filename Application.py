@@ -7,7 +7,6 @@ import VideoPath
 from yoga_toolkit.correction_toolkit import *
 from yoga_toolkit.yogaPose import *
 import pyttsx3
-import time
 
 class startPage(tk.Frame):
 	def __init__(self, master, name=None, vs=None):
