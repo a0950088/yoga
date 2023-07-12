@@ -120,11 +120,23 @@ class YogaPose():
                 print("sample video detect pose error")
                 break
             perFrameOfAngle = []
-            for _,value in self.angle_def.items():
-                angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
-                                     list(toolkit.getLandmarks(point3d[value[1]])), 
-                                     list(toolkit.getLandmarks(point3d[value[2]])))
-                perFrameOfAngle.append(angle)
+            # for _,value in self.angle_def.items():
+            #     angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
+            #                                 list(toolkit.getLandmarks(point3d[value[1]])), 
+            #                                 list(toolkit.getLandmarks(point3d[value[2]])))
+            #     perFrameOfAngle.append(angle)
+            if self.type == 'Tree' or self.type == 'WarriorII':
+                for _,value in self.angle_def.items():
+                    angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
+                                                list(toolkit.getLandmarks(point3d[value[1]])), 
+                                                list(toolkit.getLandmarks(point3d[value[2]])))
+                    perFrameOfAngle.append(angle)
+            elif self.type == 'Plank' or self.type == 'ReversePlank':
+                for _,value in self.angle_def.items():
+                    angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
+                                                list(toolkit.getLandmarks(point3d[value[1]]))[:2], 
+                                                list(toolkit.getLandmarks(point3d[value[2]]))[:2])
+                    perFrameOfAngle.append(angle)
             sum_angle+=perFrameOfAngle
         print(sum_angle/frame_count) # 平均角度
         sum_angle/=frame_count
@@ -144,20 +156,40 @@ class YogaPose():
             # 水平翻轉影片
             frame = cv2.flip(frame, 180)
             return frame
-        for key,value in self.angle_def.items():
-            angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
-                                    list(toolkit.getLandmarks(point3d[value[1]])), 
-                                    list(toolkit.getLandmarks(point3d[value[2]])))
-            self.angle_dict[key] = angle
+        # for key,value in self.angle_def.items():
+        #     angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
+        #                             list(toolkit.getLandmarks(point3d[value[1]])), 
+        #                             list(toolkit.getLandmarks(point3d[value[2]])))
+        #     self.angle_dict[key] = angle
         # print(self.sample_angle_dict)
         # print(self.angle_dict)
         if(self.type == 'Tree'):
+            for key,value in self.angle_def.items():
+                angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
+                                        list(toolkit.getLandmarks(point3d[value[1]])), 
+                                        list(toolkit.getLandmarks(point3d[value[2]])))
+                self.angle_dict[key] = angle
             self.roi, self.tips = toolkit.treePoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'WarriorII'):
+            for key,value in self.angle_def.items():
+                angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]])), 
+                                        list(toolkit.getLandmarks(point3d[value[1]])), 
+                                        list(toolkit.getLandmarks(point3d[value[2]])))
+                self.angle_dict[key] = angle
             self.roi, self.tips = toolkit.WarriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'ReversePlank'):
+            for key,value in self.angle_def.items():
+                angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
+                                        list(toolkit.getLandmarks(point3d[value[1]]))[:2], 
+                                        list(toolkit.getLandmarks(point3d[value[2]]))[:2])
+                self.angle_dict[key] = angle
             self.roi, self.tips = toolkit.ReversePlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'Plank'):
+            for key,value in self.angle_def.items():
+                angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
+                                        list(toolkit.getLandmarks(point3d[value[1]]))[:2], 
+                                        list(toolkit.getLandmarks(point3d[value[2]]))[:2])
+                self.angle_dict[key] = angle
             self.roi, self.tips = toolkit.PlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
 
         return self.draw(w, h, frame, point2d)
@@ -179,7 +211,8 @@ class YogaPose():
                 point_color = (255,255,255)
             # draw result angle
             if node.name in self.angle_def:
-                cv2.putText(frame, str(round(self.angle_dict[node.name], 3)), point, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (6, 211, 255), 2)
+                text_size, _ = cv2.getTextSize(str(round(self.angle_dict[node.name], 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                cv2.putText(frame, str(round(self.angle_dict[node.name], 1)), (point[0]-text_size[0]//2, point[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (6, 211, 255), 1)
             
             cv2.circle(frame, point, 3, point_color, -1)
         # draw sample angle

@@ -169,7 +169,8 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
             tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
-            if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+            # if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+            if angle_dict[key]>=min_angle:
                 roi[key] = True
             else:
                 roi[key] = False
@@ -206,7 +207,8 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
             tolerance_val = 5
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
-            if angle_dict[key]>=140 and (angle_dict[key]>=min_angle and angle_dict[key]<=max_angle):
+            # if angle_dict[key]>=140 and (angle_dict[key]>=min_angle and angle_dict[key]<=max_angle):
+            if angle_dict[key]>=min_angle:
                 roi[key] = True
             else:
                 roi[key] = False
