@@ -8,12 +8,12 @@ from yoga_toolkit.correction_toolkit import *
 from yoga_toolkit.yogaPose import *
 import pyttsx3
 
-class startPage(tk.Frame):
+class StartPage(tk.Frame):
 	def __init__(self, master, name=None, vs=None):
 		super().__init__(master)
 
 		""" background """
-		back_img = Image.open('data/image/background.jpg').resize((1250, 700))
+		back_img = Image.open('data/image/background.jpg').resize((1280, 800))
 		back_img = ImageTk.PhotoImage(back_img)
 		w, h = back_img.width(), back_img.height()
 		canvas = tk.Canvas(self, width=w, height=h)
@@ -22,25 +22,29 @@ class startPage(tk.Frame):
 		canvas.image = back_img
 
 		label1 = tk.Label(self, text='Yoga Sample App', font=('Comic Sans MS', 36), fg='#B15BFF').place(x=380, y=100, relwidth=0.4, relheight=0.10)
-		tk.Button(self, text='Start', bg='#DDDDFF', font=('Comic Sans MS', 16), 
-			command=lambda: master.switch_frame(Correction, vs=vs)).place(x=500, y=400, relwidth=0.18, relheight=0.10)
+		tk.Button(self, text='Start', bg='#DDDDFF', font=('Comic Sans MS', 18), 
+			command=lambda: master.switch_frame(Calibration, vs=vs), 
+			activeforeground='#ADADAD').place(x=520, y=450, relwidth=0.18, relheight=0.10)
 
-class Correction(tk.Frame):
+class Calibration(tk.Frame):
 	def __init__(self, master, name=None, vs=None):
 		super().__init__(master)
 		self.master = master
 		self.is_running = False
 
-		tk.Label(self, text='Correction Stage', fg='#B15BFF', font=('Comic Sans MS', 24, 'bold')).place(x=450, y=15, relwidth=0.22, relheight=0.07)
-		self.finish_btn = tk.Button(self, text='Finish', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.stop)
-		self.finish_btn.place(x=1100, y=600, relwidth=0.08, relheight=0.06)
+		tk.Label(self, text='Calibration Stage', fg='#B15BFF', font=('Comic Sans MS', 30, 'bold')).place(x=450, y=15)
+		icon = Image.open('data/image/finish.jpg').resize((50, 50))
+		iconimage = ImageTk.PhotoImage(icon)
+		self.finish_btn = tk.Button(self, text='Finish', image=iconimage, command=self.stop)
+		self.finish_btn.photo = iconimage
+		self.finish_btn.place(x=1150, y=700)
 		self.hint = tk.Label(self, text='請調整瑜珈墊與鏡頭，使瑜珈墊放至框線當中', fg='#0072E3', font=('微軟正黑體', 16))
-		self.hint.place(x=400, y=620)
+		self.hint.place(x=400, y=700)
 
 		""" webcam """
 		self.width, self.height = 750, 500
 		self.canvas = tk.Canvas(self, width=self.width, height=self.height)
-		self.canvas.place(x=250, y=100)
+		self.canvas.place(x=280, y=150)
 
 		self.vs = vs
 		self.thread = threading.Thread(target=self.update)
@@ -88,23 +92,27 @@ class Menu(tk.Frame):
 		self.master = master
 		self.vs = vs
 
-		tk.Label(self, text='Menu', font=('Comic Sans MS', 24, 'bold'), fg='#B15BFF').place(x=500, y=15, relwidth=0.22, relheight=0.07)
-		tk.Button(self, text='Tree Style', bg='#DDDDFF', font=('Comic Sans MS', 13), 
-			command=lambda: master.switch_frame(StartPlay, 'Tree Style', self.vs)).place(x=320, y=100, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Warrior2 Style', bg='#DDDDFF', font=('Comic Sans MS', 13), 
-			command=lambda: master.switch_frame(StartPlay, 'Warrior2 Style', self.vs)).place(x=720, y=100, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Plank', bg='#DDDDFF', font=('Comic Sans MS', 13), 
-			command=lambda: master.switch_frame(StartPlay, 'Plank', self.vs)).place(x=320, y=200, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Reverse Plank', bg='#DDDDFF', font=('Comic Sans MS', 13), 
-			command=lambda: master.switch_frame(StartPlay, 'Reverse Plank', self.vs)).place(x=720, y=200, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Child\'s pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=300, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Seated Forward Bend', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=300, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Low Lunge', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=400, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Downward dog', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=400, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Pyramid pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=320, y=500, relwidth=0.17, relheight=0.08)
-		tk.Button(self, text='Bridge pose', bg='#DDDDFF', font=('Comic Sans MS', 13)).place(x=720, y=500, relwidth=0.17, relheight=0.08)
+		tk.Label(self, text='Menu', font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15, relwidth=0.22, relheight=0.07)
+		tk.Button(self, text='Tree Style', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
+			command=lambda: master.switch_frame(StartPlay, 'Tree Style', self.vs)).place(x=320, y=150, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Warrior2 Style', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
+			command=lambda: master.switch_frame(StartPlay, 'Warrior2 Style', self.vs)).place(x=720, y=150, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Plank', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
+			command=lambda: master.switch_frame(StartPlay, 'Plank', self.vs)).place(x=320, y=250, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Reverse Plank', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
+			command=lambda: master.switch_frame(StartPlay, 'Reverse Plank', self.vs)).place(x=720, y=250, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Child\'s pose', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=320, y=350, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Seated Forward Bend', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=720, y=350, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Low Lunge', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=320, y=450, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Downward dog', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=720, y=450, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Pyramid pose', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=320, y=550, relwidth=0.17, relheight=0.08)
+		tk.Button(self, text='Bridge pose', bg='#DDDDFF', font=('Comic Sans MS', 14)).place(x=720, y=550, relwidth=0.17, relheight=0.08)
 
-		tk.Button(self, text='Return', bg='#DDDDFF', font=('Comic Sans MS', 13), command=lambda: master.switch_frame(startPage, vs=self.vs)).place(x=1100, y=15)
+		icon = Image.open('data/image/return.jpg').resize((50, 50))
+		iconimage = ImageTk.PhotoImage(icon)
+		return_btn = tk.Button(self, text='Return', image=iconimage, command=lambda: master.switch_frame(StartPage, vs=self.vs))
+		return_btn.photo = iconimage
+		return_btn.place(x=1150, y=15)
 
 class StartPlay(tk.Frame):
 	def __init__(self, master, name, vs):
@@ -112,14 +120,16 @@ class StartPlay(tk.Frame):
 		self.master = master
 		self.is_running = False
 		
-		tk.Label(self, text=name, font=('Comic Sans MS', 24, 'bold'), fg='#B15BFF').place(x=400, y=15, relwidth=0.22, relheight=0.07)
+		tk.Label(self, text=name, font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15)
 		self.hint_text = tk.StringVar()
 		self.hint_text.set('開始偵測...')
-		tk.Label(self, textvariable=self.hint_text, font=('微軟正黑體', 16), fg='#B15BFF').place(x=700, y=620)
-		tk.Button(self, text='Return', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.stop).place(x=1100, y=10)
-		# tk.Button(self, text='Play', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_resume).place(x=200, y=620, relwidth=0.06, relheight=0.06)
-		# tk.Button(self, text='Stop', bg='#DDDDFF', font=('Comic Sans MS', 13), command=self.video_stop).place(x=300, y=620, relwidth=0.06, relheight=0.06)
-		
+		tk.Label(self, textvariable=self.hint_text, font=('微軟正黑體', 16), fg='#B15BFF').place(x=50, y=680)
+		icon = Image.open('data/image/return.jpg').resize((50, 50))
+		iconimage = ImageTk.PhotoImage(icon)
+		return_btn = tk.Button(self, text='Return', image=iconimage, command=self.stop)
+		return_btn.photo = iconimage
+		return_btn.place(x=1150, y=10)
+
 		self.width, self.height = 600, 500
 		""" video """
 		self.canvas1 = tk.Canvas(self, width=self.width, height=self.height)
@@ -130,7 +140,7 @@ class StartPlay(tk.Frame):
 
 		""" webcam """
 		self.canvas2 = tk.Canvas(self, width=self.width, height=self.height)
-		self.canvas2.place(x=630, y=100)
+		self.canvas2.place(x=650, y=100)
 
 		self.vs = vs
 		self.thread = threading.Thread(target=self.cap_update)
@@ -145,6 +155,15 @@ class StartPlay(tk.Frame):
 		self.engine.setProperty('rate', 150)
 		self.voice_thread = threading.Thread(target=self.voice)
 		self.voice_thread.daemon = True
+
+		""" heatmap """
+		heatmap = Image.open('data/image/heatmap.png').resize((self.width, 150))
+		heatmap = ImageTk.PhotoImage(heatmap)
+		w, h = heatmap.width(), heatmap.height()
+		self.canvas3 = tk.Canvas(self, width=w, height=h)
+		self.canvas3.place(x=650, y=620)
+		self.canvas3.create_image(0, 0, anchor='nw', image=heatmap)
+		self.canvas3.image = heatmap
 
 		self.cap_start()
 		self.player.start()
@@ -181,12 +200,6 @@ class StartPlay(tk.Frame):
 				# print('speech stop')
 				pass
 
-	# def video_stop(self):
-	# 	self.player.pause()
-
-	# def video_resume(self):
-	# 	self.player.play()
-
 	def stop(self):
 		self.is_running = False
 		self.player.stop()
@@ -210,7 +223,7 @@ class App(tk.Tk):
 		self['menu'] = menu_bar
 
 		""" window size """
-		back_img = Image.open('data/image/background.jpg').resize((1250, 700))
+		back_img = Image.open('data/image/background.jpg').resize((1280, 800))
 		back_img = ImageTk.PhotoImage(back_img)
 		w, h = back_img.width(), back_img.height()
 		self.resizable(height=False, width=False)
@@ -223,7 +236,7 @@ class App(tk.Tk):
 
 		""" init frame """
 		self.now_frame = None
-		self.switch_frame(startPage, vs=self.vs)
+		self.switch_frame(StartPage, vs=self.vs)
 
 		self.protocol("WM_DELETE_WINDOW", self._quit)
 
@@ -245,7 +258,6 @@ class App(tk.Tk):
 			os._exit(0)
 		except:
 			print('os.exit')
-
 
 if __name__ == "__main__":
 	app = App()
