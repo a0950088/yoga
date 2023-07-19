@@ -219,93 +219,97 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
 
 def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    if point3d[AngleNodeDef.NOSE].x < point3d[AngleNodeDef.LEFT_HIP].x and point3d[AngleNodeDef.NOSE].x < point3d[AngleNodeDef.RIGHT_HIP].x:
-        side = 'LEFT_'
-        if abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[AngleNodeDef.LEFT_EYE].y) < abs(point3d[AngleNodeDef.LEFT_SHOULDER].y - point3d[AngleNodeDef.LEFT_ELBOW].y) * 0.05:
-            tips = "請保持頸椎平行於地面"
-    elif point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.LEFT_HIP].x and point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.RIGHT_HIP].x:
-        side = 'RIGHT_'
-        if abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_EYE].y) < abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_ELBOW].y) * 0.05:
-            tips = "請保持頸椎平行於地面"
-    else:
-        tips = '無法辨識哪邊朝向鏡頭'
-        return roi, tips
-
+    side = 'RIGHT_'
     for key, value in roi.items():
         tip_flag = False
         if tips == "":
             tip_flag = True
 
-        if key == side + 'ELBOW':
-            if side == 'LEFT_':
-                elbow_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_ELBOW])
-                shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_SHOULDER])
-                hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_HIP])
-            else:
-                elbow_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_ELBOW])
-                shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_SHOULDER])
-                hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_HIP])
-            if abs(elbow_x - shoulder_x) < abs(hip_x - shoulder_x) * 0.2:
+        if key == 'NOSE':
+            if point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.LEFT_HIP].x and point3d[AngleNodeDef.NOSE].x > point3d[AngleNodeDef.RIGHT_HIP].x:
+                roi['NOSE'] = True
+            elif tip_flag == True:
+                tips = '請將頭朝向左手邊'
+        if key == side + 'EYE':
+            eye_shoulder_distance = abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_EYE].y)
+            forearm_distance = abs(point3d[AngleNodeDef.RIGHT_SHOULDER].y - point3d[AngleNodeDef.RIGHT_ELBOW].y)
+
+            if eye_shoulder_distance >= forearm_distance * 0.05:
+                roi['LEFT_EYE'] = True
+                roi['RIGHT_EYE'] = True
+            elif tip_flag == True:
+                tips = "請將頭抬起，保持頸椎平行於地面"
+
+        elif key == side + 'ELBOW':
+            elbow_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_ELBOW])
+            shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_SHOULDER])
+            hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_HIP])
+            if abs(elbow_x - shoulder_x) < abs(hip_x - shoulder_x) * 0.1:
                 roi['RIGHT_ELBOW'] = True
                 roi['LEFT_ELBOW'] = True
-            else:
+            elif tip_flag == True:
                 roi['RIGHT_ELBOW'] = False
                 roi['LEFT_ELBOW'] = False
-                if tip_flag == True:
-                    tips = "請確認手肘位置在肩關節下方"
+                if elbow_x > shoulder_x:
+                    tips = "請將手肘向前移並確認手肘位置在肩關節下方"
+                else:
+                    tips = "請將手肘向後縮並確認手肘位置在肩關節下方"
+
         elif key == side + 'SHOULDER':
             tolerance_val = 10
-            min_angle = sample_angle_dict['LEFT_SHOULDER']-tolerance_val
-            max_angle = sample_angle_dict['LEFT_SHOULDER']+tolerance_val
+            min_angle = sample_angle_dict['RIGHT_SHOULDER']-tolerance_val
+            max_angle = sample_angle_dict['RIGHT_SHOULDER']+tolerance_val
             if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
                 roi['RIGHT_SHOULDER'] = True
                 roi['LEFT_SHOULDER'] = True
-            else:
+            elif tip_flag == True:
                 roi['RIGHT_SHOULDER'] = False
                 roi['LEFT_SHOULDER'] = False
-                if tip_flag == True:
-                    tips = "請維持頸椎、胸椎、腰椎維持一直線平行於地面"
+                if angle_dict[key] < min_angle:
+                    tips = "請將手肘向前移並維持頸椎、胸椎、腰椎維持一直線平行於地面"
+                else:
+                    tips = "請將手肘向後縮並維持頸椎、胸椎、腰椎維持一直線平行於地面"
+
         elif key == side + 'HIP':
             tolerance_val = 10
-            min_angle = sample_angle_dict['LEFT_HIP']-tolerance_val
-            max_angle = sample_angle_dict['LEFT_HIP']+tolerance_val
+            min_angle = sample_angle_dict['RIGHT_HIP']-tolerance_val
+            max_angle = sample_angle_dict['RIGHT_HIP']+tolerance_val
             if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
                 roi['RIGHT_HIP'] = True
                 roi['LEFT_HIP'] = True
-            elif angle_dict[key] < min_angle:
+            elif angle_dict[key] < min_angle and tip_flag == True:
                 roi['RIGHT_HIP'] = False
                 roi['LEFT_HIP'] = False
-                if tip_flag == True:
-                    tips = "請不要駝背"
-            else:
+                tips = "請將屁股稍微放下"
+            elif tip_flag == True:
                 roi['RIGHT_HIP'] = False
                 roi['LEFT_HIP'] = False
-                if tip_flag == True:
-                    tips = "請注意不要將腰椎過度伸展"
+                tips = "請將屁股稍微抬起"
+
         elif key == side + 'KNEE':
             tolerance_val = 10
-            min_angle = sample_angle_dict['LEFT_KNEE']-tolerance_val
-            max_angle = sample_angle_dict['LEFT_KNEE']+tolerance_val
+            min_angle = sample_angle_dict['RIGHT_KNEE']-tolerance_val
+            max_angle = sample_angle_dict['RIGHT_KNEE']+tolerance_val
             if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
                 roi['RIGHT_KNEE'] = True
                 roi['LEFT_KNEE'] = True
-            else:
+            elif tip_flag == True:
                 roi['RIGHT_KNEE'] = False
                 roi['LEFT_KNEE'] = False
-                if tip_flag == True:
-                    tips = "請用將雙腳盡量伸展"
+                tips = "請將膝蓋伸直並讓腳踝到膝蓋成一直線"
+
         elif key == side + 'ANKLE':
             tolerance_val = 15
             min_angle = 30
             if angle_dict[key]>=min_angle:
                 roi['RIGHT_ANKLE'] = True
                 roi['LEFT_ANKLE'] = True
-            elif angle_dict[key] < min_angle:
+            elif angle_dict[key] < min_angle and tip_flag == True:
                 print(angle_dict[key], min_angle)
                 roi['RIGHT_ANKLE'] = False
                 roi['LEFT_ANKLE'] = False
-                if tip_flag == True:
-                    tips = "請用腳尖將身體撐起"
+                tips = "請用前腳掌將身體撐起"
+
     if tips == "":
         tips = "動作正確 ! "
     return roi, tips
