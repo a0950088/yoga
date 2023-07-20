@@ -74,7 +74,7 @@ def computeAngle(point1, centerPoint, point2):
     return B
 
 def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    for key, value in roi.items():
+    for key, _ in roi.items():
         tip_flag = False
         if tips == "":
             tip_flag = True
@@ -84,10 +84,12 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
             max_angle = sample_angle_dict[key]+tolerance_val
             if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
                 roi[key] = True
+            elif angle_dict[key]<min_angle:
+                roi[key] = False
+                tips = "將左腳打直平均分配雙腳重量，勿將右腳重量全放在左腳大腿" if tip_flag else tips
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認左腳重心，避免左腳傾斜造成負擔"
+                tips = "請勿將右腳重量全放在左腳大腿，避免傾斜造成左腳負擔" if tip_flag else tips
         elif key == 'RIGHT_FOOT_INDEX':
             _,foot_y,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_FOOT_INDEX])
             _,knee_y,_ = getLandmarks(point3d[AngleNodeDef.LEFT_KNEE])
@@ -96,53 +98,57 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
             else:
                 roi[key] = False
                 if tip_flag == True:
-                    tips = "請確認右腳腳尖須高於左腳膝蓋，避免造成膝蓋負擔"
+                    tips = "請將右腳抬至高於左腳膝蓋的位置，勿將右腳放在左腳膝蓋上，\n避免造成膝蓋負擔"
         elif key == 'RIGHT_KNEE':
             _,_,knee_z = getLandmarks(point3d[AngleNodeDef.RIGHT_KNEE])
             _,_,hip_z = getLandmarks(point3d[AngleNodeDef.RIGHT_HIP])
             if angle_dict[key]<=60 and ((hip_z-knee_z)*100)<=15:
                 roi[key] = True
+            elif angle_dict[key]>60:
+                roi[key] = False
+                tips = "請將右腳再抬高一些，不可壓到左腳膝蓋" if tip_flag else tips
+            elif ((hip_z-knee_z)*100)>15:
+                roi[key] = False
+                tips = "將臂部往前推，打開左右骨盆並，右腳膝蓋不可向前傾" if tip_flag else tips
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認右腳膝蓋不可往前傾，須與髖關節保持同一平面"
+                tips = "右腳膝蓋不可向前傾，須與髖關節保持同一平面" if tip_flag else tips
         elif key == 'RIGHT_HIP':
             if angle_dict[key]>=100:
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認右腳膝蓋是否正確抬起"
+                tips = "請確認右腳膝蓋是否正確抬起" if tip_flag else tips
         elif key == 'LEFT_SHOULDER' or key == 'RIGHT_SHOULDER':
             if angle_dict[key]>=120:
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙手是否高舉在頭部之上"
+                tips = "請將雙手合掌，往上伸展至頭頂正上方" if tip_flag else tips
         elif key == 'LEFT_ELBOW' or key == 'RIGHT_ELBOW':
             if angle_dict[key]>=90:
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認手軸是否盡量往上伸直"
+                tips = "請將手再抬高一些，並保持在頭頂正上方" if tip_flag else tips
         elif key == 'LEFT_INDEX' or key == 'RIGHT_INDEX':
             index_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_INDEX]) if key == 'LEFT_INDEX' else getLandmarks(point3d[AngleNodeDef.RIGHT_INDEX])
             left_shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_SHOULDER])
             right_shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_SHOULDER])
             if index_x>=right_shoulder_x and index_x<=left_shoulder_x:
                 roi[key] = True
-            else:
+            elif index_x<right_shoulder_x:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙手合掌並往上伸直於兩側肩膀中間"
+                tips = "請將雙手往左移動，保持在頭頂正上方" if tip_flag else tips
+            elif index_x>left_shoulder_x:
+                roi[key] = False
+                tips = "請將雙手往右移動，保持在頭頂正上方" if tip_flag else tips
     if tips == "":
         tips = "動作正確 ! "
     return roi, tips
 
 def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    for key, value in roi.items():
+    for key, _ in roi.items():
         tip_flag = False
         if tips == "":
             tip_flag = True
@@ -154,17 +160,21 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認右腳腳尖須朝向墊子右方"
+                tips = "請將右腳腳尖朝向右手邊，右腳膝蓋往右腳腳踝的方向移動，\n直到小腿與地面呈垂直" if tip_flag else tips
         elif key == 'RIGHT_KNEE':
             ankle_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_ANKLE])
             knee_x,_,_ = getLandmarks(point3d[AngleNodeDef.RIGHT_KNEE])
             if angle_dict[key]>=90 and angle_dict[key]<=150 and abs((ankle_x-knee_x)*100)<=10:
                 roi[key] = True
-            else:
+            elif abs((ankle_x-knee_x)*100)>10:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認右腳膝蓋與腳踝的關節點須重疊，\n並注意大腿下壓的角度"
+                tips = "請將右腳膝蓋往右腳腳踝的方向移動，直到小腿與地面呈垂直" if tip_flag else tips
+            elif angle_dict[key]<90:
+                roi[key] = False
+                tips = "臀部不可低於右腳膝蓋，請將左腳往內收回使臀部高於右腳膝蓋" if tip_flag else tips
+            elif angle_dict[key]>150:
+                roi[key] = False
+                tips = "請將左腳再往後一些，讓臀部有空間可以下壓" if tip_flag else tips
         elif key == 'LEFT_KNEE':
             tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -174,15 +184,13 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認左腳需盡量伸直，且左腳腳尖需朝向墊子前方"
+                tips = "請將左腳膝蓋打直，並將左腳腳尖朝向前方" if tip_flag else tips
         elif key == 'LEFT_HIP' or key == 'RIGHT_HIP':
             if angle_dict[key]>=100:
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認兩側骨盆向外打開並挺胸"
+                tips = "請將雙腳再拉開一些距離，臀部向前推並挺胸" if tip_flag else tips
         elif key == 'NOSE':
             nose_x,_,_ = getLandmarks(point3d[AngleNodeDef.NOSE])
             left_hip_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_HIP])
@@ -191,29 +199,31 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認頭部位於骨盆正上方，且將頭轉向彎曲腳的方向"
+                tips = "請將頭轉向彎曲腳的方向並直視前方" if tip_flag else tips
         elif key == 'LEFT_SHOULDER' or key == 'RIGHT_SHOULDER':
             tolerance_val = 5
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
+            direction = "右" if key == 'RIGHT_SHOULDER' else "左"
             if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
                 roi[key] = True
-            else:
+            elif angle_dict[key]<min_angle:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認兩側肩膀不要過度用力，並將背部挺直，\n盡量將身體面向正面"
+                tips = f"請將{direction}手抬高，與肩膀呈水平，\n並將身體挺直朝向前方" if tip_flag else tips
+            elif angle_dict[key]>max_angle:
+                roi[key] = False
+                tips = f"請將{direction}手放低，與肩膀呈水平，\n並將身體挺直朝向前方" if tip_flag else tips
         elif key == 'LEFT_ELBOW' or key == 'RIGHT_ELBOW':
             tolerance_val = 5
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
+            direction = "右" if key == 'RIGHT_ELBOW' else "左"
             # if angle_dict[key]>=140 and (angle_dict[key]>=min_angle and angle_dict[key]<=max_angle):
             if angle_dict[key]>=min_angle:
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙手是否平舉並伸向墊子兩側"
+                tips = f"請將{direction}手手心朝下平放並打直{direction}手" if tip_flag else tips
     if tips == "":
         tips = "動作正確 ! "
     return roi, tips
@@ -315,7 +325,7 @@ def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
     
 def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    for key, value in roi.items():
+    for key, _ in roi.items():
         tip_flag = False
         if tips == "":
             tip_flag = True
@@ -327,8 +337,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認頭部需朝向左邊"
+                tips = "請將頭部朝向左邊" if tip_flag else tips
         elif key == 'LEFT_ELBOW':
             tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -337,8 +346,15 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙手手軸是否與肩膀成一條線"
+                tips = "請將雙手手軸打直" if tip_flag else tips
+        elif key == 'LEFT_INDEX':
+            index_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_INDEX])
+            wrist_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_WRIST])
+            if index_x < wrist_x:
+                roi[key] = True
+            else:
+                roi[key] = False
+                tips = "請將雙手手指朝向臀部" if tip_flag else tips
         elif key == 'LEFT_WRIST':
             tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -347,17 +363,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙手手腕是否與手軸成一條線"
-        elif key == 'LEFT_INDEX':
-            index_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_INDEX])
-            wrist_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_WRIST])
-            if index_x < wrist_x:
-                roi[key] = True
-            else:
-                roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認手指需朝向臂部方向"
+                tips = "請將手軸往手腕方向移動，\n使肩膀、手軸、手腕成一直線垂直於地面" if tip_flag else tips
         elif key == 'LEFT_SHOULDER':
             tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -366,8 +372,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認手臂需與地面盡量垂直"
+                tips = "雙手垂直於地面，並將臀部抬起，使身體保持一直線" if tip_flag else tips
         elif key == 'LEFT_HIP':
             tolerance_val = 5
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -376,8 +381,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認臂部是否有抬起，並與脊椎呈一條線"
+                tips = "請將臀部抬高一些，使身體保持一直線" if tip_flag else tips
         elif key == 'LEFT_KNEE':
             tolerance_val = 5
             min_angle = sample_angle_dict[key]-tolerance_val
@@ -386,8 +390,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                if tip_flag == True:
-                    tips = "請確認雙腳需與上半身呈一條線"
+                tips = "請將雙腳膝蓋打直，使身體保持一直線" if tip_flag else tips
     if tips == "":
         tips = "動作正確 ! "
     return roi, tips
