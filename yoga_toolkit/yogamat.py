@@ -59,7 +59,13 @@ def get_heatmap():
     heatmap = cv2.rotate(heatmap, cv2.ROTATE_180)
     #cv2.imshow('Heatmap', heatmap)
     return heatmap
-    
+
+
+def pose_evaluate():
+    #判斷手在壓力墊上還是腳  -> 用數值去判定 -> 框出數值大於特定值
+    #判斷兩腳在地或單腳
+    #判斷是否雙手在壓力墊上
+    pass
 
 if __name__ == "__main__":
     print(ser)
