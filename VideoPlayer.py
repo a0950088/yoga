@@ -11,8 +11,7 @@ class VideoPlayer:
 		self.fps = self.video.get(cv2.CAP_PROP_FPS)
 		self.is_playing = False
 
-		self.video_thread = threading.Thread(target=self.update)
-		self.video_thread.daemon = True
+		self.video_thread = threading.Thread(target=self.update, daemon=True)
 
 	def start(self):
 		self.is_playing = True
