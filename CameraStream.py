@@ -1,15 +1,19 @@
 import cv2
 import threading
+import datetime
 
 class CameraStream:
 	def __init__(self):
 		self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 		self.is_running = False
 		self.frame = None
-		self.output = cv2.VideoWriter("output.avi", cv2.VideoWriter_fourcc(*'XVID'), 20.0, (640, 480))
 		
-		self.thread = threading.Thread(target=self.update)
-		self.thread.daemon = True
+		""" save original frame"""
+		current_date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+		filename = f"./output_{current_date_time}.avi"
+		self.output = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*'XVID'), 30.0, (640, 480))
+		
+		self.thread = threading.Thread(target=self.update, daemon=True)
 
 	def start(self):
 		self.is_running = True

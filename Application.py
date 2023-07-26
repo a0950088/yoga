@@ -3,6 +3,7 @@ import tkinter.messagebox
 import os
 from CameraStream import *
 from VideoPlayer import *
+from MusicPlayer import *
 import VideoPath
 from yoga_toolkit.correction_toolkit import *
 from yoga_toolkit.yogaPose import *
@@ -47,13 +48,11 @@ class Calibration(tk.Frame):
 		self.canvas.place(x=280, y=150)
 
 		self.vs = vs
-		self.thread = threading.Thread(target=self.update)
-		self.thread.daemon = True
+		self.thread = threading.Thread(target=self.update, daemon=True)
 
 		self.engine = pyttsx3.init()
 		self.engine.setProperty('rate', 150)
-		self.voice_thread = threading.Thread(target=self.voice)
-		self.voice_thread.daemon = True
+		self.voice_thread = threading.Thread(target=self.voice, daemon=True)
 
 		self.start()
 		
@@ -132,19 +131,18 @@ class StartPlay(tk.Frame):
 
 		self.width, self.height = 600, 500
 		""" video """
-		self.canvas1 = tk.Canvas(self, width=self.width, height=self.height)
-		self.canvas1.place(x=20, y=100)
+		self.canvas_video = tk.Canvas(self, width=self.width, height=self.height)
+		self.canvas_video.place(x=20, y=100)
 
 		video_path = VideoPath.Yoga_Video[name]
-		self.player = VideoPlayer(video_path, self.canvas1)
+		self.player = VideoPlayer(video_path, self.canvas_video)
 
 		""" webcam """
-		self.canvas2 = tk.Canvas(self, width=self.width, height=self.height)
-		self.canvas2.place(x=650, y=100)
+		self.canvas_cam = tk.Canvas(self, width=self.width, height=self.height)
+		self.canvas_cam.place(x=650, y=100)
 
 		self.vs = vs
-		self.thread = threading.Thread(target=self.cap_update)
-		self.thread.daemon = True
+		self.thread = threading.Thread(target=self.cap_update, daemon=True)
 
 		""" detect model"""
 		self.model = YogaPose(VideoPath.Yoga_Model[name])
@@ -153,17 +151,16 @@ class StartPlay(tk.Frame):
 		""" audio """
 		self.engine = pyttsx3.init()
 		self.engine.setProperty('rate', 150)
-		self.voice_thread = threading.Thread(target=self.voice)
-		self.voice_thread.daemon = True
+		self.voice_thread = threading.Thread(target=self.voice, daemon=True)
 
 		""" heatmap """
 		heatmap = Image.open('data/image/heatmap.png').resize((self.width, 150))
 		heatmap = ImageTk.PhotoImage(heatmap)
 		w, h = heatmap.width(), heatmap.height()
-		self.canvas3 = tk.Canvas(self, width=w, height=h)
-		self.canvas3.place(x=650, y=620)
-		self.canvas3.create_image(0, 0, anchor='nw', image=heatmap)
-		self.canvas3.image = heatmap
+		self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
+		self.canvas_heatmap.place(x=650, y=620)
+		self.canvas_heatmap.create_image(0, 0, anchor='nw', image=heatmap)
+		self.canvas_heatmap.image = heatmap
 
 		self.cap_start()
 		self.player.start()
@@ -182,9 +179,9 @@ class StartPlay(tk.Frame):
 					frame = self.model.detect(frame, self.width, self.height, False)
 					frame = cv2.flip(frame, 180)
 					photo_image = ImageTk.PhotoImage(Image.fromarray(frame))
-					self.canvas2.create_image(0, 0, anchor='nw', image=photo_image)
-					self.canvas2.image = photo_image
-					self.canvas2.update()
+					self.canvas_cam.create_image(0, 0, anchor='nw', image=photo_image)
+					self.canvas_cam.image = photo_image
+					self.canvas_cam.update()
 					self.hint_text.set(self.model.tips)
 				except:
 					print('cap stop')
@@ -234,6 +231,10 @@ class App(tk.Tk):
 		self.vs = CameraStream()
 		self.vs.start()
 
+		""" background music """
+		self.bg_music = MusicPlayer()
+		self.bg_music.start()
+
 		""" init frame """
 		self.now_frame = None
 		self.switch_frame(StartPage, vs=self.vs)
@@ -252,6 +253,7 @@ class App(tk.Tk):
 
 	def _quit(self):
 		self.vs.stop()
+		self.bg_music.stop()
 		self.quit()
 		self.destroy()
 		try:
