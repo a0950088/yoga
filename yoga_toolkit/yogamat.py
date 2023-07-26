@@ -60,6 +60,23 @@ def get_heatmap():
     #cv2.imshow('Heatmap', heatmap)
     return heatmap
 
+def find_bounding_box():
+    #https://stackoverflow.com/questions/58419893/generating-bounding-boxes-from-heatmap-data
+    # Grayscale then Otsu's threshold
+    image = cv2.imread('herotwo_heatmap.png')
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+    # Find contours
+    cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    for c in cnts:
+        x,y,w,h = cv2.boundingRect(c)
+        cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
+
+    cv2.imshow('thresh', thresh)
+    cv2.imshow('image', image)
+    cv2.waitKey()
 
 def pose_evaluate():
     #判斷手在壓力墊上還是腳  -> 用數值去判定 -> 框出數值大於特定值
