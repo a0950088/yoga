@@ -3,7 +3,6 @@ import threading
 from PIL import Image, ImageTk
 import time
 
-
 class VideoPlayer:
 	def __init__(self, video_path, canvas):
 		self.canvas = canvas
