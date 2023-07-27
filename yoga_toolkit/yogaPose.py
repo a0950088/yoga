@@ -56,11 +56,17 @@ class YogaPose():
             roi = {
                 'NOSE': False,
                 'LEFT_ELBOW': False,
-                'LEFT_WRIST': False,
+                'RIGHT_ELBOW': False,
                 'LEFT_INDEX': False,
+                'RIGHT_INDEX': False,
+                'LEFT_WRIST': False,
+                'RIGHT_WRIST': False,
                 'LEFT_SHOULDER': False,
+                'RIGHT_SHOULDER': False,
                 'LEFT_HIP': False,
-                'LEFT_KNEE': False
+                'RIGHT_HIP': False,
+                'LEFT_KNEE': False,
+                'RIGHT_KNEE': False
             }
             angle_def = AngleNodeDef.REVERSE_PLANK_ANGLE
             jsonfile_path = f"yoga_toolkit/JsonFile/ReversePlankPose/sample.json"
@@ -191,8 +197,8 @@ class YogaPose():
                                         list(toolkit.getLandmarks(point3d[value[2]]))[:2])
                 self.angle_dict[key] = angle
             self.roi, self.tips = toolkit.PlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
-
-        return self.draw(w, h, frame, point2d)
+        frame = self.draw(w, h, frame, point2d)
+        return frame
     
     def draw(self, w, h, frame, point2d):
         # draw body connection
