@@ -426,5 +426,4 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 tips = "請將雙腳膝蓋打直，使身體保持一直線" if tip_flag else tips
     if tips == "":
         tips = "動作正確 ! "
-    print(side)
     return roi, tips
