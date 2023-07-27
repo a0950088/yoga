@@ -60,23 +60,37 @@ def get_heatmap():
     #cv2.imshow('Heatmap', heatmap)
     return heatmap
 
-def find_bounding_box():
+def find_bounding_box(heatmap):
     #https://stackoverflow.com/questions/58419893/generating-bounding-boxes-from-heatmap-data
     # Grayscale then Otsu's threshold
-    image = cv2.imread('herotwo_heatmap.png')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(heatmap, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-
     # Find contours
     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     for c in cnts:
         x,y,w,h = cv2.boundingRect(c)
-        cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
+        cv2.rectangle(heatmap, (x, y), (x + w, y + h), (36,255,12), 2)
+    #cv2.imshow('thresh', thresh)
+    #cv2.imshow('heatmap', heatmap)
+    #cv2.waitKey()
 
-    cv2.imshow('thresh', thresh)
-    cv2.imshow('image', image)
-    cv2.waitKey()
+def min_bounding_rect():
+    pass
+
+def check_foot_position(Rects):
+    foot1 = []
+    foot2 = []
+    for r in Rects:
+        x,y,w,h = cv2.boundingRect(r)
+        if x < w/2:
+            foot1.append([x,y])
+            foot1.append([x+w,y+h])
+        else:
+            foot2.append([x,y])
+            foot2.append([x+w,y+h])
+
+
 
 def pose_evaluate():
     #判斷手在壓力墊上還是腳  -> 用數值去判定 -> 框出數值大於特定值
