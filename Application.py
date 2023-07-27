@@ -56,7 +56,7 @@ class App(tk.Tk):
 		self.now_frame.pack(side='top', fill='both', expand=1)
 
 	def show_info(self):
-		tk.messagebox.showinfo("About", "This is a correction sample system.")
+		tk.messagebox.showinfo("About", "This is a Yoga sample system.")
 
 	def _quit(self):
 		self.vs.stop()

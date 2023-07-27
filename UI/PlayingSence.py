@@ -2,6 +2,7 @@ import tkinter as tk
 import pyttsx3
 from PIL import Image, ImageTk
 import threading
+import time
 import tools.VideoPath as VideoPath
 from tools.VideoPlayer import VideoPlayer
 from yoga_toolkit.yogaPose import *
@@ -11,6 +12,8 @@ class StartPlay(tk.Frame):
 		super().__init__(master)
 		self.master = master
 		self.is_running = False
+		self.cnt_frame = 0
+		self.is_paused = False
 		
 		tk.Label(self, text=name, font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15)
 		""" hint """
@@ -39,7 +42,7 @@ class StartPlay(tk.Frame):
 
 		""" counting """
 		self.count = tk.StringVar()
-		tk.Label(self, textvariable=self.count, font=('微軟正黑體', 40, 'bold'), fg='#F00078', bg='#D0D0D0').place(x=680, y=150)
+		tk.Label(self, textvariable=self.count, font=('微軟正黑體', 40, 'bold'), fg='#F00078', bg='#D0D0D0').place(x=1180, y=100)
 		self.counting_thread = threading.Thread(target=self.counting, daemon=True)
 
 		""" detect model"""
@@ -65,6 +68,7 @@ class StartPlay(tk.Frame):
 
 	def counting(self):
 		try:
+			self.count.set(30)
 			tmp = int(self.count.get())
 		except:
 			print('not yet')
@@ -72,14 +76,17 @@ class StartPlay(tk.Frame):
 			self.count.set(tmp)
 			time.sleep(1)
 			if tmp == 0:
-				tk.messagebox.showinfo("Time's up", "comment here...")
-				self.count.set("")
+				result = tk.messagebox.showinfo("Time's up", "comment here...")
+				if result == "ok":
+					self.count.set("")
+					self.cnt_frame = 0
+					self.stop()
 			tmp -= 1
 
 	def cap_start(self):
 		self.is_running = True
 		self.thread.start()
-		self.voice_thread.start()
+		self.voice_thread.start()		
 
 	def cap_update(self):
 		while self.is_running:
@@ -95,14 +102,17 @@ class StartPlay(tk.Frame):
 					self.canvas_cam.update()
 					self.hint_text.set(self.model.tips)
 
-					if self.model.tips == "動作正確":
-						self.count.set(10)
+					if self.hint_text.get() == "動作正確" and self.cnt_frame != -1:
+						self.cnt_frame += 1
+					if self.cnt_frame > 10:
 						self.counting_thread.start()
+						self.is_paused = True
+						self.cnt_frame = -1
 				except:
 					print('cap stop')
 
 	def voice(self):
-		while self.is_running:
+		while not self.is_paused:
 			try:
 				result = self.hint_text.get()
 				self.engine.say(result)
@@ -115,5 +125,6 @@ class StartPlay(tk.Frame):
 	def stop(self):
 		self.is_running = False
 		self.player.stop()
+		
 		from UI.Menu import Menu
 		self.master.switch_frame(Menu, vs=self.vs)
