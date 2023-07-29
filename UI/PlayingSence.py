@@ -6,19 +6,20 @@ import time
 import tools.VideoPath as VideoPath
 from tools.VideoPlayer import VideoPlayer
 from yoga_toolkit.yogaPose import *
+# from yoga_toolkit.yogamat import get_heatmap
 
 class StartPlay(tk.Frame):
 	def __init__(self, master, name, vs):
 		super().__init__(master)
 		self.master = master
 		self.is_running = False
-		self.cnt_frame = 0
 		self.is_paused = False
+		self.cnt_frame = 0		
+		self.txt_tmp = ""
 		
 		tk.Label(self, text=name, font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15)
 		""" hint """
 		self.hint_text = tk.StringVar()
-		self.hint_text.set('開始偵測...')
 		tk.Label(self, textvariable=self.hint_text, font=('微軟正黑體', 16), fg='#B15BFF').place(x=50, y=680)
 		icon = Image.open('data/image/return.jpg').resize((50, 50))
 		iconimage = ImageTk.PhotoImage(icon)
@@ -38,7 +39,7 @@ class StartPlay(tk.Frame):
 		self.canvas_cam = tk.Canvas(self, width=self.width, height=self.height)
 		self.canvas_cam.place(x=650, y=100)
 		self.vs = vs
-		self.thread = threading.Thread(target=self.cap_update, daemon=True)
+		self.web_thread = threading.Thread(target=self.cap_update, daemon=True)
 
 		""" counting """
 		self.count = tk.StringVar()
@@ -55,38 +56,42 @@ class StartPlay(tk.Frame):
 		self.voice_thread = threading.Thread(target=self.voice, daemon=True)
 
 		""" heatmap """
-		heatmap = Image.open('data/image/heatmap.png').resize((self.width, 150))
-		heatmap = ImageTk.PhotoImage(heatmap)
-		w, h = heatmap.width(), heatmap.height()
+		w, h = self.width, 150
 		self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
 		self.canvas_heatmap.place(x=650, y=620)
-		self.canvas_heatmap.create_image(0, 0, anchor='nw', image=heatmap)
-		self.canvas_heatmap.image = heatmap
+		# self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
 
 		self.cap_start()
 		self.player.start()
 
+	# def heatmap_display(self):
+	# 	while self.is_running:
+	# 		heatmap_frame = get_heatmap()
+	# 		photo_image = ImageTk.PhotoImage(Image.fromarray(heatmap_frame))
+	# 		self.canvas_heatmap.create_image(0, 0, anchor='nw', image=photo_image)
+	# 		self.canvas_heatmap.image = photo_image
+	# 		self.canvas_heatmap.update()
+
 	def counting(self):
-		try:
-			self.count.set(30)
-			tmp = int(self.count.get())
-		except:
-			print('not yet')
-		while tmp > -1:
-			self.count.set(tmp)
+		self.count.set(30)
+		cnt_tmp = int(self.count.get())
+		while cnt_tmp > -1:
+			self.count.set(cnt_tmp)
 			time.sleep(1)
-			if tmp == 0:
+			if cnt_tmp == 0:
+				self.is_paused = False
 				result = tk.messagebox.showinfo("Time's up", "comment here...")
 				if result == "ok":
 					self.count.set("")
 					self.cnt_frame = 0
 					self.stop()
-			tmp -= 1
+			cnt_tmp -= 1
 
 	def cap_start(self):
 		self.is_running = True
-		self.thread.start()
-		self.voice_thread.start()		
+		self.web_thread.start()
+		# self.heatmap_thread.start()
+		self.voice_thread.start()	
 
 	def cap_update(self):
 		while self.is_running:
@@ -100,31 +105,41 @@ class StartPlay(tk.Frame):
 					self.canvas_cam.create_image(0, 0, anchor='nw', image=photo_image)
 					self.canvas_cam.image = photo_image
 					self.canvas_cam.update()
-					self.hint_text.set(self.model.tips)
-
-					if self.hint_text.get() == "動作正確" and self.cnt_frame != -1:
-						self.cnt_frame += 1
-					if self.cnt_frame > 10:
-						self.counting_thread.start()
-						self.is_paused = True
-						self.cnt_frame = -1
+					self.txt_tmp = self.model.tips
 				except:
 					print('cap stop')
 
 	def voice(self):
-		while not self.is_paused:
-			try:
-				result = self.hint_text.get()
-				self.engine.say(result)
-				self.engine.runAndWait()
-				time.sleep(2)
-			except:
-				# print('speech stop')
-				pass
+		while self.is_running:
+			if not self.is_paused:
+				if self.cnt_frame > 2:
+						self.hint_text.set("請維持動作30秒，開始計時")
+						self.counting_thread.start()
+						self.is_paused = True
+						self.cnt_frame = -1
+				elif self.hint_text.get() == "" and self.cnt_frame != -1:
+					self.hint_text.set('開始偵測...')
+				elif self.count.get() == "0":
+					self.hint_text.set("練習結束，休息30秒")
+				else:
+					self.hint_text.set(self.txt_tmp)
+
+				if self.hint_text.get() == "動作正確" and self.cnt_frame != -1:
+					self.cnt_frame += 1
+				try:
+					result = self.hint_text.get()
+					self.engine.say(result)
+					self.engine.runAndWait()
+				except:
+					# print('speech stop')
+					pass
+			else:
+				self.hint_text.set("")
+			time.sleep(2)
 
 	def stop(self):
 		self.is_running = False
 		self.player.stop()
-		
+
 		from UI.Menu import Menu
 		self.master.switch_frame(Menu, vs=self.vs)
