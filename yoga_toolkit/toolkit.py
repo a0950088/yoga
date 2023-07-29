@@ -109,7 +109,7 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 tips = "請將右腳再抬高一些，不可壓到左腳膝蓋" if tip_flag else tips
             elif ((hip_z-knee_z)*100)>15:
                 roi[key] = False
-                tips = "將臂部往前推，打開左右骨盆並，右腳膝蓋不可向前傾" if tip_flag else tips
+                tips = "將臂部往前推，打開左右骨盆，右腳膝蓋不可向前傾" if tip_flag else tips
             else:
                 roi[key] = False
                 tips = "右腳膝蓋不可向前傾，須與髖關節保持同一平面" if tip_flag else tips
@@ -118,19 +118,26 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = True
             else:
                 roi[key] = False
-                tips = "請確認右腳膝蓋是否正確抬起" if tip_flag else tips
+                tips = "請確認右腳膝蓋是否已經抬至左腳膝蓋以上" if tip_flag else tips
         elif key == 'LEFT_SHOULDER' or key == 'RIGHT_SHOULDER':
             if angle_dict[key]>=120:
                 roi[key] = True
             else:
                 roi[key] = False
-                tips = "請將雙手合掌，往上伸展至頭頂正上方" if tip_flag else tips
+                tips = "請將雙手合掌並互相施力，往上伸展至頭頂正上方" if tip_flag else tips
         elif key == 'LEFT_ELBOW' or key == 'RIGHT_ELBOW':
-            if angle_dict[key]>=90:
+            tolerance_val = 5
+            min_angle = sample_angle_dict[key]-tolerance_val
+            if angle_dict[key]>=min_angle:
                 roi[key] = True
             else:
                 roi[key] = False
-                tips = "請將手再抬高一些，並保持在頭頂正上方" if tip_flag else tips
+                tips = "請將雙手再往上伸展，使手軸貼近耳朵" if tip_flag else tips
+            # if angle_dict[key]>=90:
+            #     roi[key] = True
+            # else:
+            #     roi[key] = False
+            #     tips = "請將手再抬高一些，並保持在頭頂正上方" if tip_flag else tips
         elif key == 'LEFT_INDEX' or key == 'RIGHT_INDEX':
             index_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_INDEX]) if key == 'LEFT_INDEX' else getLandmarks(point3d[AngleNodeDef.RIGHT_INDEX])
             left_shoulder_x,_,_ = getLandmarks(point3d[AngleNodeDef.LEFT_SHOULDER])
@@ -201,7 +208,7 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = False
                 tips = "請將頭轉向彎曲腳的方向並直視前方" if tip_flag else tips
         elif key == 'LEFT_SHOULDER' or key == 'RIGHT_SHOULDER':
-            tolerance_val = 5
+            tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
             direction = "右" if key == 'RIGHT_SHOULDER' else "左"
