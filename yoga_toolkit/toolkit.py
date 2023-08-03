@@ -102,12 +102,12 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
         elif key == 'RIGHT_KNEE':
             _,_,knee_z = getLandmarks(point3d[AngleNodeDef.RIGHT_KNEE])
             _,_,hip_z = getLandmarks(point3d[AngleNodeDef.RIGHT_HIP])
-            if angle_dict[key]<=60 and ((hip_z-knee_z)*100)<=15:
+            if angle_dict[key]<=65 and ((hip_z-knee_z)*100)<=17:
                 roi[key] = True
-            elif angle_dict[key]>60:
+            elif angle_dict[key]>65:
                 roi[key] = False
                 tips = "請將右腳再抬高一些，不可壓到左腳膝蓋" if tip_flag else tips
-            elif ((hip_z-knee_z)*100)>15:
+            elif ((hip_z-knee_z)*100)>17:
                 roi[key] = False
                 tips = "將臂部往前推，打開左右骨盆，右腳膝蓋不可向前傾" if tip_flag else tips
             else:
@@ -126,7 +126,7 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = False
                 tips = "請將雙手合掌並互相施力，往上伸展至頭頂正上方" if tip_flag else tips
         elif key == 'LEFT_ELBOW' or key == 'RIGHT_ELBOW':
-            tolerance_val = 5
+            tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
             if angle_dict[key]>=min_angle:
                 roi[key] = True
