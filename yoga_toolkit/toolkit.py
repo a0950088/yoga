@@ -154,7 +154,7 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
         tips = "動作正確 ! "
     return roi, tips
 
-def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+def warriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     for key, _ in roi.items():
         tip_flag = False
         if tips == "":
@@ -235,7 +235,7 @@ def WarriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
         tips = "動作正確 ! "
     return roi, tips
 
-def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+def plankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     side = 'RIGHT_'
     for key, value in roi.items():
         tip_flag = False
@@ -331,7 +331,7 @@ def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
         tips = "動作正確 ! "
     return roi, tips
     
-def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+def reversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     side = ""
     for key, _ in roi.items():
         tip_flag = False
@@ -385,7 +385,8 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
             max_angle = sample_angle_dict[key]+tolerance_val
             # min_angle = sample_angle_dict[f"{sample_side}_WRIST"]-tolerance_val
             # max_angle = sample_angle_dict[f"{sample_side}_WRIST"]+tolerance_val
-            if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+            # if angle_dict[key]>=min_angle and angle_dict[key]<=max_angle:
+            if angle_dict[key]<=max_angle:
                 roi["LEFT_WRIST"] = True
                 roi["RIGHT_WRIST"] = True
             else:
@@ -419,7 +420,7 @@ def ReversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi["RIGHT_HIP"] = False
                 tips = "請將臀部抬高一些，使身體保持一直線" if tip_flag else tips
         elif key == f"{side}_KNEE":
-            tolerance_val = 5
+            tolerance_val = 10
             min_angle = sample_angle_dict[key]-tolerance_val
             max_angle = sample_angle_dict[key]+tolerance_val
             # min_angle = sample_angle_dict[f"{sample_side}_KNEE"]-tolerance_val
