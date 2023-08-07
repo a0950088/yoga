@@ -8,7 +8,7 @@ def correction(image):
 	''' calculate the correction bounding box'''
 	center_x , center_y = int(image_width / 2), int(image_height * 0.85)
 	rectangle = np.array([[center_x - 0.3 * image_width, center_y - 0.07 * image_height], [center_x - 0.38 * image_width, center_y + 0.07 * image_height], [center_x + 0.38 * image_width, center_y + 0.07 * image_height], [center_x + 0.3 * image_width, center_y - 0.07 * image_height]], np.int32)
-	cv2.polylines(image, [rectangle], True, (0, 0, 255), 2) 
+	cv2.polylines(image, [rectangle], True, (255, 0, 0), 2) 
 	return image
 
 

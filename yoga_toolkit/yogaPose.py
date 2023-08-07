@@ -56,11 +56,17 @@ class YogaPose():
             roi = {
                 'NOSE': False,
                 'LEFT_ELBOW': False,
-                'LEFT_WRIST': False,
+                'RIGHT_ELBOW': False,
                 'LEFT_INDEX': False,
+                'RIGHT_INDEX': False,
+                'LEFT_WRIST': False,
+                'RIGHT_WRIST': False,
                 'LEFT_SHOULDER': False,
+                'RIGHT_SHOULDER': False,
                 'LEFT_HIP': False,
-                'LEFT_KNEE': False
+                'RIGHT_HIP': False,
+                'LEFT_KNEE': False,
+                'RIGHT_KNEE': False
             }
             angle_def = AngleNodeDef.REVERSE_PLANK_ANGLE
             jsonfile_path = f"yoga_toolkit/JsonFile/ReversePlankPose/sample.json"
@@ -176,28 +182,28 @@ class YogaPose():
                                         list(toolkit.getLandmarks(point3d[value[1]])), 
                                         list(toolkit.getLandmarks(point3d[value[2]])))
                 self.angle_dict[key] = angle
-            self.roi, self.tips = toolkit.WarriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+            self.roi, self.tips = toolkit.warriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'ReversePlank'):
             for key,value in self.angle_def.items():
                 angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
                                         list(toolkit.getLandmarks(point3d[value[1]]))[:2], 
                                         list(toolkit.getLandmarks(point3d[value[2]]))[:2])
                 self.angle_dict[key] = angle
-            self.roi, self.tips = toolkit.ReversePlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+            self.roi, self.tips = toolkit.reversePlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'Plank'):
             for key,value in self.angle_def.items():
                 angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
                                         list(toolkit.getLandmarks(point3d[value[1]]))[:2], 
                                         list(toolkit.getLandmarks(point3d[value[2]]))[:2])
                 self.angle_dict[key] = angle
-            self.roi, self.tips = toolkit.PlankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
-
-        return self.draw(w, h, frame, point2d)
+            self.roi, self.tips = toolkit.plankPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+        frame = self.draw(w, h, frame, point2d)
+        return frame
     
     def draw(self, w, h, frame, point2d):
         # draw body connection
-        for m in toolkit.pose_connection:
-            cv2.line(frame, toolkit.getLandmarks(point2d[m[0]], w, h), list(toolkit.getLandmarks(point2d[m[1]], w, h)), (0, 0, 255), 1)
+        # for m in toolkit.pose_connection:
+        #     cv2.line(frame, toolkit.getLandmarks(point2d[m[0]], w, h), list(toolkit.getLandmarks(point2d[m[1]], w, h)), (0, 0, 255), 1)
         # draw points
         point_color = (0,0,0)
         for node in toolkit.nodeList:
@@ -206,21 +212,22 @@ class YogaPose():
                 if self.roi[node.name]:
                     point_color = (0,255,0)
                 else:
-                    point_color = (0,0,255)
-            else:
-                point_color = (255,255,255)
+                    point_color = (255,0,0)
+                    cv2.circle(frame, point, 7, point_color, 4)
+            # else:
+            #     point_color = (255,255,255)
             # draw result angle
             if node.name in self.angle_def:
                 text_size, _ = cv2.getTextSize(str(round(self.angle_dict[node.name], 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                 cv2.putText(frame, str(round(self.angle_dict[node.name], 1)), (point[0]-text_size[0]//2, point[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (6, 211, 255), 1)
             
-            cv2.circle(frame, point, 3, point_color, -1)
+            # cv2.circle(frame, point, 3, point_color, -1)
         # draw sample angle
-        draw_y = 30
-        for key, value in self.sample_angle_dict.items():
-            text = f"{key}: {value}"
-            cv2.putText(frame, text, (10, draw_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (6, 211, 255), 1)
-            draw_y+=20
+        # draw_y = 30
+        # for key, value in self.sample_angle_dict.items():
+        #     text = f"{key}: {value}"
+        #     cv2.putText(frame, text, (10, draw_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (6, 211, 255), 1)
+        #     draw_y+=20
         # 水平翻轉影片
         frame = cv2.flip(frame, 180)
         return frame

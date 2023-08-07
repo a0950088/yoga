@@ -2,3 +2,5 @@ mediapipe==0.10.1
 opencv-python==4.7.0.72
 numpy==1.23.5
 pyttsx3
+pygame
+pyserial
