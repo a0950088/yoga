@@ -251,9 +251,9 @@ def PlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi['RIGHT_ELBOW'] = False
                 roi['LEFT_ELBOW'] = False
                 if elbow_x > shoulder_x:
-                    tips = "請將手肘向前移並確認手肘位置在肩關節下方"
-                else:
                     tips = "請將手肘向後縮並確認手肘位置在肩關節下方"
+                else:
+                    tips = "請將手肘向前移並確認手肘位置在肩關節下方"
 
         elif key == side + 'SHOULDER':
             tolerance_val = 10
