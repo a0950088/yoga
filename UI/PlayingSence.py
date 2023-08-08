@@ -29,11 +29,10 @@ class StartPlay(tk.Frame):
 
 		self.width, self.height = 600, 500
 
-		""" video """
-		self.canvas_video = tk.Canvas(self, width=self.width, height=self.height)
-		self.canvas_video.place(x=20, y=100)
-		video_path = VideoPath.Yoga_Video[name]
-		self.player = VideoPlayer(video_path, self.canvas_video)
+		""" image """
+		self.canvas_img = tk.Canvas(self, width=self.width, height=self.height)
+		self.canvas_img.place(x=20, y=100)
+		self.img_thread = threading.Thread(target=self.change_image, daemon=True)
 
 		""" webcam """
 		self.canvas_cam = tk.Canvas(self, width=self.width, height=self.height)
@@ -43,7 +42,7 @@ class StartPlay(tk.Frame):
 
 		""" counting """
 		self.count = tk.StringVar()
-		tk.Label(self, textvariable=self.count, font=('微軟正黑體', 40, 'bold'), fg='#F00078', bg='#D0D0D0').place(x=1180, y=100)
+		tk.Label(self, textvariable=self.count, font=('Comic Sans MS', 50, 'bold'), fg='#F00078', bg='#D0D0D0').place(x=1180, y=100)
 		self.counting_thread = threading.Thread(target=self.counting, daemon=True)
 
 		""" detect model"""
@@ -62,7 +61,16 @@ class StartPlay(tk.Frame):
 		# self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
 
 		self.cap_start()
-		self.player.start()
+
+	def change_image(self):
+		while self.is_running:
+			try:
+				back_img = Image.open('data/image/background.jpg').resize((self.width, self.height))
+				back_img = ImageTk.PhotoImage(back_img)
+				self.canvas_img.create_image(0, 0, anchor='nw', image=back_img)
+				self.canvas_img.image = back_img
+			except:
+				print('img stop')
 
 	# def heatmap_display(self):
 	# 	while self.is_running:
@@ -91,7 +99,8 @@ class StartPlay(tk.Frame):
 		self.is_running = True
 		self.web_thread.start()
 		# self.heatmap_thread.start()
-		self.voice_thread.start()	
+		self.voice_thread.start()
+		self.img_thread.start()
 
 	def cap_update(self):
 		while self.is_running:
@@ -139,7 +148,6 @@ class StartPlay(tk.Frame):
 
 	def stop(self):
 		self.is_running = False
-		self.player.stop()
 
 		from UI.Menu import Menu
 		self.master.switch_frame(Menu, vs=self.vs)

@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from UI.StartPage import StartPage
-from UI.PlayingSence import StartPlay
+from UI.TeachStage import TeachStage
 
 class Menu(tk.Frame):
 	def __init__(self, master, name=None, vs=None):
@@ -11,7 +11,7 @@ class Menu(tk.Frame):
 
 		tk.Label(self, text='Menu', font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15, relwidth=0.22, relheight=0.07)
 		tk.Button(self, text='Tree Style', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
-			command=lambda: master.switch_frame(StartPlay, 'Tree Style', self.vs)).place(x=320, y=150, relwidth=0.17, relheight=0.08)
+			command=lambda: master.switch_frame(TeachStage, 'Tree Style', self.vs)).place(x=320, y=150, relwidth=0.17, relheight=0.08)
 		tk.Button(self, text='Warrior2 Style', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
 			command=lambda: master.switch_frame(StartPlay, 'Warrior2 Style', self.vs)).place(x=720, y=150, relwidth=0.17, relheight=0.08)
 		tk.Button(self, text='Plank', bg='#DDDDFF', font=('Comic Sans MS', 14), activeforeground='#ADADAD',
