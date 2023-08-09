@@ -6,7 +6,7 @@ import time
 import tools.VideoPath as VideoPath
 from tools.VideoPlayer import VideoPlayer
 from yoga_toolkit.yogaPose import *
-# from yoga_toolkit.yogamat import get_heatmap
+from yoga_toolkit.yogamat import get_heatmap
 
 class StartPlay(tk.Frame):
 	def __init__(self, master, name, vs):
@@ -58,7 +58,7 @@ class StartPlay(tk.Frame):
 		w, h = self.width, 150
 		self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
 		self.canvas_heatmap.place(x=650, y=620)
-		# self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
+		self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
 
 		self.cap_start()
 
@@ -72,13 +72,14 @@ class StartPlay(tk.Frame):
 			except:
 				print('img stop')
 
-	# def heatmap_display(self):
-	# 	while self.is_running:
-	# 		heatmap_frame = get_heatmap()
-	# 		photo_image = ImageTk.PhotoImage(Image.fromarray(heatmap_frame))
-	# 		self.canvas_heatmap.create_image(0, 0, anchor='nw', image=photo_image)
-	# 		self.canvas_heatmap.image = photo_image
-	# 		self.canvas_heatmap.update()
+	def heatmap_display(self):
+		while self.is_running:
+			heatmap_frame = get_heatmap()
+			heatmap_frame = cv2.resize(heatmap_frame, (self.width, 150))
+			photo_image = ImageTk.PhotoImage(Image.fromarray(heatmap_frame))
+			self.canvas_heatmap.create_image(0, 0, anchor='nw', image=photo_image)
+			self.canvas_heatmap.image = photo_image
+			self.canvas_heatmap.update()
 
 	def counting(self):
 		self.count.set(30)
@@ -98,9 +99,10 @@ class StartPlay(tk.Frame):
 	def cap_start(self):
 		self.is_running = True
 		self.web_thread.start()
-		# self.heatmap_thread.start()
+   	
+	  self.heatmap_thread.start()
 		self.voice_thread.start()
-		self.img_thread.start()
+		#self.img_thread.start()
 
 	def cap_update(self):
 		while self.is_running:
@@ -121,7 +123,7 @@ class StartPlay(tk.Frame):
 	def voice(self):
 		while self.is_running:
 			if not self.is_paused:
-				if self.cnt_frame > 2:
+				if self.cnt_frame > 0:
 						self.hint_text.set("請維持動作30秒，開始計時")
 						self.counting_thread.start()
 						self.is_paused = True
