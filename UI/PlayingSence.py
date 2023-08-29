@@ -66,7 +66,7 @@ class StartPlay(tk.Frame):
 	def change_image(self):
 		while self.is_running:
 			img = self.img_path
-			# print(img)
+			print(img)
 			try:
 				back_img = Image.open(img).resize((self.width, self.height))
 				back_img = ImageTk.PhotoImage(back_img)
@@ -122,7 +122,6 @@ class StartPlay(tk.Frame):
 					self.canvas_cam.update()
 					self.txt_tmp = self.model.tips
 					self.img_path = self.model.imagePath
-					print(self.img_path)
 				except:
 					print('cap stop')
 
