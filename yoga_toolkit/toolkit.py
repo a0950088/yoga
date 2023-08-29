@@ -151,7 +151,7 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi[key] = False
                 tips = "請將雙手往右移動，保持在頭頂正上方" if tip_flag else tips
     if tips == "":
-        tips = "動作正確 ! "
+        tips = "動作正確"
     return roi, tips
 
 def warriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
@@ -348,7 +348,7 @@ def plankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 tips = "請用前腳掌將身體撐起"
 
     if tips == "":
-        tips = "動作正確 ! "
+        tips = "動作正確"
     return roi, tips
     
 def reversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
@@ -453,5 +453,5 @@ def reversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
                 roi["RIGHT_KNEE"] = False
                 tips = "請將雙腳膝蓋打直，使身體保持一直線" if tip_flag else tips
     if tips == "":
-        tips = "動作正確 ! "
+        tips = "動作正確"
     return roi, tips
