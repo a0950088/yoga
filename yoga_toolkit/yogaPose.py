@@ -13,6 +13,7 @@ class YogaPose():
         self.roi, self.angle_def, self.jsonfile_path, self.samplefile_path = self.initialize(type)
         self.angle_dict = self.initialAngleDict()
         self.sample_angle_dict = {}
+        self.imagePath = "../data/image/WarriorIIRulePic/8.JPG"
         
     def initialize(self, type):
         roi = {}
@@ -182,7 +183,7 @@ class YogaPose():
                                         list(toolkit.getLandmarks(point3d[value[1]])), 
                                         list(toolkit.getLandmarks(point3d[value[2]])))
                 self.angle_dict[key] = angle
-            self.roi, self.tips = toolkit.warriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
+            self.roi, self.tips, self.imagePath = toolkit.warriorIIPoseRule(self.roi, self.tips, self.sample_angle_dict, self.angle_dict, point3d)
         elif(self.type == 'ReversePlank'):
             for key,value in self.angle_def.items():
                 angle = toolkit.computeAngle(list(toolkit.getLandmarks(point3d[value[0]]))[:2], 
