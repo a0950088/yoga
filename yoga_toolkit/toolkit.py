@@ -155,7 +155,7 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
 
 def warriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
-    imageFolder = "../data/image/WarriorIIRulePic"
+    imageFolder = "./data/image/WarriorIIRulePic"
     for key, _ in roi.items():
         tip_flag = False
         if tips == "":

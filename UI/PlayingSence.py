@@ -6,7 +6,7 @@ import time
 import tools.VideoPath as VideoPath
 from tools.VideoPlayer import VideoPlayer
 from yoga_toolkit.yogaPose import *
-from yoga_toolkit.yogamat import get_heatmap
+# from yoga_toolkit.yogamat import get_heatmap
 
 class StartPlay(tk.Frame):
 	def __init__(self, master, name, vs):
@@ -16,6 +16,7 @@ class StartPlay(tk.Frame):
 		self.is_paused = False
 		self.cnt_frame = 0		
 		self.txt_tmp = ""
+		self.img_path = "data/image/background.jpg"
 		
 		tk.Label(self, text=name, font=('Comic Sans MS', 30, 'bold'), fg='#B15BFF').place(x=500, y=15)
 		""" hint """
@@ -55,27 +56,31 @@ class StartPlay(tk.Frame):
 		self.voice_thread = threading.Thread(target=self.voice, daemon=True)
 
 		""" heatmap """
-		w, h = self.width, 150
-		self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
-		self.canvas_heatmap.place(x=650, y=620)
-		self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
+		# w, h = self.width, 150
+		# self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
+		# self.canvas_heatmap.place(x=650, y=620)
+		# self.heatmap_thread = threading.Thread(target=self.heatmap_display, daemon=True)
 
 		self.cap_start()
 
 	def change_image(self):
 		while self.is_running:
+			img = self.img_path
+			# print(img)
 			try:
-				back_img = Image.open('data/image/background.jpg').resize((self.width, self.height))
+				back_img = Image.open(img).resize((self.width, self.height))
 				back_img = ImageTk.PhotoImage(back_img)
 				self.canvas_img.create_image(0, 0, anchor='nw', image=back_img)
 				self.canvas_img.image = back_img
 			except:
-				print('img stop')
+				# print('img stop')
+				pass
+
+			time.sleep(1)
 
 	def heatmap_display(self):
 		while self.is_running:
 			heatmap_frame = get_heatmap()
-			heatmap_frame = cv2.resize(heatmap_frame, (self.width, 150))
 			photo_image = ImageTk.PhotoImage(Image.fromarray(heatmap_frame))
 			self.canvas_heatmap.create_image(0, 0, anchor='nw', image=photo_image)
 			self.canvas_heatmap.image = photo_image
@@ -99,10 +104,9 @@ class StartPlay(tk.Frame):
 	def cap_start(self):
 		self.is_running = True
 		self.web_thread.start()
-   	
-	  self.heatmap_thread.start()
+		# self.heatmap_thread.start()
 		self.voice_thread.start()
-		#self.img_thread.start()
+		self.img_thread.start()
 
 	def cap_update(self):
 		while self.is_running:
@@ -117,13 +121,15 @@ class StartPlay(tk.Frame):
 					self.canvas_cam.image = photo_image
 					self.canvas_cam.update()
 					self.txt_tmp = self.model.tips
+					self.img_path = self.model.imagePath
+					print(self.img_path)
 				except:
 					print('cap stop')
 
 	def voice(self):
 		while self.is_running:
 			if not self.is_paused:
-				if self.cnt_frame > 0:
+				if self.cnt_frame > 2:
 						self.hint_text.set("請維持動作30秒，開始計時")
 						self.counting_thread.start()
 						self.is_paused = True
