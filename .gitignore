@@ -1,5 +1,0 @@
-.gitignore
-__pycache__/
-*.avi
-*.mp4
-./data/video/
