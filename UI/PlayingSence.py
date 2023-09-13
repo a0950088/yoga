@@ -6,6 +6,7 @@ import time
 import tools.VideoPath as VideoPath
 from tools.VideoPlayer import VideoPlayer
 from yoga_toolkit.yogaPose import *
+# Turn off the comment below if the yoga mat is connected.
 # from yoga_toolkit.yogamat import get_heatmap
 
 class StartPlay(tk.Frame):
@@ -56,6 +57,7 @@ class StartPlay(tk.Frame):
 		self.voice_thread = threading.Thread(target=self.voice, daemon=True)
 
 		""" heatmap """
+		# Turn off the comment below if the yoga mat is connected.
 		# w, h = self.width, 150
 		# self.canvas_heatmap = tk.Canvas(self, width=w, height=h)
 		# self.canvas_heatmap.place(x=650, y=620)
@@ -66,17 +68,15 @@ class StartPlay(tk.Frame):
 	def change_image(self):
 		while self.is_running:
 			img = self.img_path
-			print(img)
 			try:
 				back_img = Image.open(img).resize((self.width, self.height))
 				back_img = ImageTk.PhotoImage(back_img)
 				self.canvas_img.create_image(0, 0, anchor='nw', image=back_img)
 				self.canvas_img.image = back_img
 			except:
-				# print('img stop')
 				pass
 
-			time.sleep(1)
+			time.sleep(2)
 
 	def heatmap_display(self):
 		while self.is_running:
