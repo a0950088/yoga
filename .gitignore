@@ -1,4 +1,5 @@
+.gitignore
+__pycache__/
 *.avi
 *.mp4
-*.pyc
-./yoga_toolkit/PlankPose/
+./data/video/
