@@ -13,7 +13,7 @@ class YogaPose():
         self.roi, self.angle_def, self.jsonfile_path, self.samplefile_path = self.initialize(type)
         self.angle_dict = self.initialAngleDict()
         self.sample_angle_dict = {}
-        self.imagePath = "./data/image/WarriorIIRulePic/8.JPG"
+        self.imagePath = "./data/image/WarriorIIRulePic/8.JPG" # temporary use to demo, skip it
         
     def initialize(self, type):
         roi = {}
@@ -156,7 +156,7 @@ class YogaPose():
         
     def detect(self, frame, w, h, mode):
         '''
-        mode: set mediapipe static_image_mode, True->use to different image/False->use to video
+        detect incoming frame
         return draw frame
         '''
         self.tips = ""
@@ -208,6 +208,7 @@ class YogaPose():
         # draw body connection
         # for m in toolkit.pose_connection:
         #     cv2.line(frame, toolkit.getLandmarks(point2d[m[0]], w, h), list(toolkit.getLandmarks(point2d[m[1]], w, h)), (0, 0, 255), 1)
+        
         # draw points
         point_color = (0,0,0)
         for node in toolkit.nodeList:
@@ -220,18 +221,21 @@ class YogaPose():
                     cv2.circle(frame, point, 7, point_color, 4)
             # else:
             #     point_color = (255,255,255)
+            
             # draw result angle
             # if node.name in self.angle_def:
             #     text_size, _ = cv2.getTextSize(str(round(self.angle_dict[node.name], 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
             #     cv2.putText(frame, str(round(self.angle_dict[node.name], 1)), (point[0]-text_size[0]//2, point[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (6, 211, 255), 1)
             
             # cv2.circle(frame, point, 3, point_color, -1)
+        
         # draw sample angle
         # draw_y = 30
         # for key, value in self.sample_angle_dict.items():
         #     text = f"{key}: {value}"
         #     cv2.putText(frame, text, (10, draw_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (6, 211, 255), 1)
         #     draw_y+=20
+        
         # 水平翻轉影片
         frame = cv2.flip(frame, 180)
         return frame

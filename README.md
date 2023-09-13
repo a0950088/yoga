@@ -21,3 +21,12 @@
 5. Download the video from ...
 
 ## How to Use?
+
+## File explanation
+- UI
+
+- data: Some UI resource
+	- image
+	- music
+	- video
+

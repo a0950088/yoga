@@ -15,6 +15,19 @@ mp_result_pose = mp_pose.Pose(static_image_mode=False,
                                         min_detection_confidence=0.5)
 
 def getMediapipeResult(frame, mode=True):
+    """Get mediapipe result of this frame
+
+    Args:
+        frame (image array):  process frame
+        mode (bool): set mediapipe args [static_image_mode]
+            True -> use to different image
+            False -> use to video
+
+    Returns:
+        2D & 3D result of mediapipe
+        (if process error return 0,0)
+
+    """
     try:
         if mode:
             results = mp_sample_pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -27,15 +40,32 @@ def getMediapipeResult(frame, mode=True):
         return 0, 0
 
 def getLandmarks(landmark, w=None, h=None):
-    '''
-    Get landmark x,y,z respectively
-    '''
+    """Get skeleton landmark x,y,z respectively
+    
+    Args:
+        landmark (mediapipe landmark): skeleton landmark
+        w (int): image w
+        h (int): image h
+
+    Returns:
+        2D relative coordinates(image) landmark(x,y) || 3D real coordinates landmark(x,y,z)
+    
+    """
     if w == None or h == None:
         return landmark.x, landmark.y, landmark.z
     else:
         return int(landmark.x*w), int(landmark.y*h)
 
 def readSampleJsonFile(path):
+    """read joint angle sample json file
+    
+    Args:
+        path (str): json file path
+
+    Returns:
+        sample angle in json(dict) format
+        (if process error return None)
+    """
     try:
         with open(path, 'r') as file:
             sample_angle = json.load(file)
@@ -44,6 +74,16 @@ def readSampleJsonFile(path):
         return None
 
 def writeSampleJsonFile(angle_array, angle_def, path):
+    """write sample joint angle in json file
+    
+    Args:
+        angle_array (numpy array): sample angle array
+        angle_def (list): joint points defined by AngleNodeDef.py
+        path (str): json file storage path
+
+    Returns:
+        No return
+    """
     data = {}
     index = 0
     for key,_ in angle_def.items():
@@ -54,6 +94,20 @@ def writeSampleJsonFile(angle_array, angle_def, path):
         json.dump(data, file, indent=4)
 
 def computeAngle(point1, centerPoint, point2):
+    """compute joint poins angle
+        
+    Args:
+        point1 (list): joint points contains x,y,z
+        centerPoint (list): joint points contains x,y,z
+        point2 (list): joint points contains x,y,z
+        
+        centerPoint--->point1 = vector1
+        centerPoint--->point2 = vector2
+        use vector1 & vector2 compute angle
+        
+    Returns:
+        degree (float)
+    """
     p1_x, pc_x, p2_x = point1[0], centerPoint[0], point2[0]
     p1_y, pc_y, p2_y = point1[1], centerPoint[1], point2[1] 
 
@@ -74,6 +128,20 @@ def computeAngle(point1, centerPoint, point2):
     return B
 
 def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+    """tree pose rule 
+        
+    Args:
+        roi (list): region of interesting joint for tree pose
+        tips (str): tips
+        sample_angle_dict (dict): sample angle dict
+        angle_dict (dict): angle dict
+        point3d (mediapipe): mediapipe detect result
+        
+    Returns:
+        roi (dict)
+        tips (str)
+    """
+    
     for key, _ in roi.items():
         tip_flag = False
         if tips == "":
@@ -155,6 +223,22 @@ def treePoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
 
 def warriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+    """warriorII pose rule 
+        
+    Args:
+        roi (list): region of interesting joint for tree pose
+        tips (str): tips
+        sample_angle_dict (dict): sample angle dict
+        angle_dict (dict): angle dict
+        point3d (mediapipe): mediapipe detect result
+        
+    Returns:
+        roi (dict)
+        tips (str)
+        imagePath(str): temporary use to demo, skip it
+    """
+    
+    # imageFolder temporary use to demo
     imageFolder = "./data/image/WarriorIIRulePic"
     imagePath = ""
     for key, _ in roi.items():
@@ -257,6 +341,19 @@ def warriorIIPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips, imagePath
 
 def plankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+    """plank pose rule 
+        
+    Args:
+        roi (list): region of interesting joint for tree pose
+        tips (str): tips
+        sample_angle_dict (dict): sample angle dict
+        angle_dict (dict): angle dict
+        point3d (mediapipe): mediapipe detect result
+        
+    Returns:
+        roi (dict)
+        tips (str)
+    """
     side = ''
     for key, value in roi.items():
         tip_flag = False
@@ -363,6 +460,19 @@ def plankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
     return roi, tips
     
 def reversePlankPoseRule(roi, tips, sample_angle_dict, angle_dict, point3d):
+    """reverse plank pose rule 
+        
+    Args:
+        roi (list): region of interesting joint for tree pose
+        tips (str): tips
+        sample_angle_dict (dict): sample angle dict
+        angle_dict (dict): angle dict
+        point3d (mediapipe): mediapipe detect result
+        
+    Returns:
+        roi (dict)
+        tips (str)
+    """
     side = ""
     for key, _ in roi.items():
         tip_flag = False
