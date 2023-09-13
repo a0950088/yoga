@@ -17,7 +17,7 @@
 	```bash
 	pip install -r requirements.txt
 	```
-5. Download the videos from [google drive](https://drive.google.com/drive/folders/1noSRIhCsv7EMgpzv8V5nwREaCGVpt6FW?usp=drive_link), and put the video directory `video\` under `data/`.
+5. Download the videos from [google drive](https://drive.google.com/drive/folders/1noSRIhCsv7EMgpzv8V5nwREaCGVpt6FW?usp=drive_link), and put the video directory `video/` under `data/`.
 6. Make sure the yoga mat is connected with your device.
 
 ## Notes
