@@ -1,6 +1,5 @@
 # yoga
 
-
 ## Pre-Requisites
 1. Clone this repository.
 	```bash
@@ -18,6 +17,14 @@
 	```bash
 	pip install -r requirements.txt
 	```
-5. Download the video from ...
+5. Download the videos from ...
+6. Make sure the yoga mat is connected with your device.
+
+## Notes
+- Note that you could commit the part of the heatmap if you don’t need to use it or the yoga mat is not connected. Otherwise, you will get the error and the application cannot be started.
 
 ## How to Use?
+- Start the yoga application using the the command below: 
+	```bash
+	python Application.py
+	```
